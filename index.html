@@ -18,42 +18,34 @@
   --hover-bg: #252525;
   --amarelo-destaque: #ffcc00;
   --verde-suave: #00ff66;
+  --azul-ativo: #3498db;
+  --roxo-ativo: #9b59b6;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono', monospace; min-height: 100vh; display: flex; flex-direction: column; }
-
-/* TELA DE LOGIN */
 .login-overlay { position: fixed; inset: 0; background: #0b0b0b; z-index: 2000; display: flex; align-items: center; justify-content: center; }
 .login-box { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; padding: 40px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
 .login-title { font-size: 14px; color: var(--cinza-destaque); letter-spacing: 4px; margin-bottom: 24px; text-transform: uppercase; }
-
 .password-wrapper { position: relative; width: 100%; margin-bottom: 16px; }
 .password-wrapper .login-input { margin-bottom: 0; padding-right: 50px; }
 .btn-toggle-pass { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--texto-sec); font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; outline: none; user-select: none; }
 .btn-toggle-pass:hover { color: var(--branco); }
-
 .login-input, .login-select { width: 100%; padding: 14px 18px; background: var(--bg-page); border: 1px solid var(--border); border-radius: 8px; color: var(--branco); font-family: 'DM Mono', monospace; font-size: 14px; margin-bottom: 16px; outline: none; transition: border-color .2s; }
 .login-input:focus, .login-select:focus { border-color: var(--amarelo-destaque); }
 .login-select option { background: var(--bg-panel); color: var(--branco); }
-
 .btn-login { width: 100%; padding: 14px; background: var(--cinza-destaque); color: #000; border: none; border-radius: 8px; font-family: 'DM Mono', monospace; font-weight: bold; font-size: 14px; cursor: pointer; letter-spacing: 1px; transition: opacity .2s; }
 .btn-login:hover { opacity: 0.9; }
 .login-erro { color: var(--vermelho-suave); font-size: 12px; margin-top: 12px; display: none; letter-spacing: 1px; }
-
-/* LAYOUT PRINCIPAL */
 .app-container { display: none; flex-direction: column; min-height: 100vh; }
-
 .header { background: var(--bg-panel); border-bottom: 1px solid var(--border); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 .header-left { display: flex; flex-direction: column; gap: 4px; }
 .header-title { font-size: 11px; color: var(--cinza-destaque); letter-spacing: 4px; }
 .header-sub { font-size: 18px; font-weight: 700; letter-spacing: 2px; }
 .header-right { display: flex; gap: 24px; align-items: center; }
-
 .user-status-box { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; text-align: left; display: flex; flex-direction: column; gap: 2px; }
 .user-status-label { font-size: 9px; color: var(--texto-sec); letter-spacing: 1px; }
 .user-status-name { font-size: 12px; font-weight: bold; color: var(--amarelo-destaque); }
 .btn-logout { background: transparent; border: none; color: var(--vermelho-suave); font-family: 'DM Mono', monospace; font-size: 10px; cursor: pointer; text-decoration: underline; margin-top: 2px; padding: 0; width: max-content; }
-
 .hdr-cnt { text-align: right; }
 .hdr-cnt-label { font-size: 10px; color: var(--texto-sec); letter-spacing: 2px; }
 .hdr-cnt-val { font-size: 32px; font-weight: 900; }
@@ -66,7 +58,7 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
 .turno-btn { padding: 8px 20px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--texto-sec); font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: 1px; transition: all .2s; }
 .turno-btn.active { border-color: var(--cinza-destaque); background: rgba(204, 204, 204, 0.1); color: var(--cinza-destaque); }
 .turno-info { font-size: 11px; color: var(--texto-sec); margin-left: 12px; letter-spacing: 1px; }
-.btn-novo-dia { margin-left: auto; padding: 8px 20px; border-radius: 6px; border: 1px solid rgba(255, 92, 92, 0.3); background: transparent; color: var(--vermelho-suave); font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 700; cursor: pointer; letter-spacing: 1px; transition: all .2s; display: none; }
+.btn-novo-dia { margin-left: auto; padding: 8px 20px; border-radius: 6px; border: 1px solid rgba(255, 92, 92, 0.3); background: transparent; color: var(--vermelho-suave); font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 700; cursor: pointer; letter-spacing: 1px; transition: all .2s; }
 .btn-novo-dia:hover { border-color: var(--vermelho-suave); background: rgba(255, 92, 92, 0.1); }
 .nav { background: var(--bg-panel); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; flex-wrap: wrap; }
 .nav-btn { padding: 16px 24px; border: none; background: transparent; border-bottom: 2px solid transparent; color: var(--texto-sec); font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: 2px; transition: all .2s; }
@@ -76,23 +68,28 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
 .aba.active { display: block; }
 .lancamento-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 24px; }
 .relogio { font-size: 56px; color: var(--cinza-destaque); letter-spacing: 4px; text-shadow: 0 0 20px rgba(204, 204, 204, 0.3); }
-
 .turno-ativo-badge { font-size: 12px; color: var(--amarelo-destaque); letter-spacing: 3px; border: 1px solid var(--amarelo-destaque); background: rgba(255, 204, 0, 0.05); padding: 8px 20px; border-radius: 20px; font-weight: bold; box-shadow: 0 0 10px rgba(255, 204, 0, 0.1); }
-
 .alin-btns { display: flex; gap: 12px; }
 .alin-btn { padding: 12px 32px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg-panel); color: var(--texto-sec); font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .2s; letter-spacing: 1px; }
-.alin-btn.active { border-color: var(--cinza-destaque); background: rgba(204, 204, 204, 0.1); color: var(--cinza-destaque); }
+.btn-azul.active { border-color: var(--azul-ativo) !important; color: var(--azul-ativo) !important; background: rgba(52, 152, 219, 0.1) !important; }
+.btn-roxo.active { border-color: var(--roxo-ativo) !important; color: var(--roxo-ativo) !important; background: rgba(155, 89, 182, 0.1) !important; }
 .form-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 500px; }
 .form-label { font-size: 12px; color: var(--texto-sec); letter-spacing: 3px; text-transform: uppercase; }
 #vin-input { width: 100%; padding: 20px 24px; border-radius: 12px; border: 2px solid var(--border); background: var(--bg-page); color: var(--branco); font-family: 'DM Mono', monospace; font-size: 24px; letter-spacing: 4px; text-align: center; outline: none; transition: border-color .2s; }
-#vin-input:focus { border-color: var(--cinza-destaque); box-shadow: 0 0 15px rgba(204, 204, 204, 0.15); }
-.btn-lancar { width: 100%; padding: 16px; border-radius: 10px; border: none; background: var(--cinza-destaque); color: #000; font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 900; letter-spacing: 2px; cursor: pointer; transition: opacity .2s; }
-.btn-lancar:hover { opacity: .85; }
+.input-azul { border-color: var(--azul-ativo) !important; box-shadow: 0 0 15px rgba(52, 152, 219, 0.15) !important; }
+.input-roxo { border-color: var(--roxo-ativo) !important; box-shadow: 0 0 15px rgba(155, 89, 182, 0.15) !important; }
+
+/* Animações e Estilos Dinâmicos do Botão Lançar */
+.btn-lancar { width: 100%; padding: 16px; border-radius: 10px; border: none; font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 900; letter-spacing: 2px; cursor: pointer; transition: all 0.3s ease; }
+.btn-lancar-azul { background: var(--bg-panel); color: var(--branco); border: 2px solid var(--border); }
+.btn-lancar-azul:hover { background: var(--azul-ativo); border-color: var(--azul-ativo); box-shadow: 0 0 15px rgba(52, 152, 219, 0.4); color: #fff; }
+.btn-lancar-roxo { background: var(--bg-panel); color: var(--branco); border: 2px solid var(--border); }
+.btn-lancar-roxo:hover { background: var(--roxo-ativo); border-color: var(--roxo-ativo); box-shadow: 0 0 15px rgba(155, 89, 182, 0.4); color: #fff; }
+
 .contadores { display: flex; gap: 48px; margin-top: 16px; }
 .contador { text-align: center; }
 .contador-num { font-size: 36px; font-weight: 900; }
 .contador-label { font-size: 11px; color: var(--texto-sec); letter-spacing: 2px; margin-top: 4px; }
-
 .feedback { padding: 20px 36px; border-radius: 14px; text-align: center; animation: fadeIn .3s ease; width: 100%; max-width: 500px; }
 .feedback.ok { background: rgba(0, 255, 102, 0.05); border: 2px solid var(--verde-suave); }
 .feedback.erro { background: rgba(255, 92, 92, 0.1); border: 2px solid var(--vermelho-suave); }
@@ -100,12 +97,10 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
 .feedback.ok .feedback-msg { color: var(--verde-suave); }
 .feedback.erro .feedback-msg { color: var(--vermelho-suave); }
 .feedback-sub { color: var(--texto-sec); font-size: 13px; margin-top: 5px; letter-spacing: 1px; }
-
 .search-container { width: 100%; max-width: 400px; margin-bottom: 32px; display: flex; flex-direction: column; gap: 8px; }
 .search-input { width: 100%; padding: 14px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-panel); color: var(--branco); font-family: 'DM Mono', monospace; font-size: 14px; outline: none; transition: border-color .2s; }
 .search-input:focus { border-color: var(--cinza-destaque); }
 .search-result { font-size: 12px; font-weight: bold; letter-spacing: 1px; padding: 6px 10px; border-radius: 4px; display: inline-block; margin-top: 4px; }
-
 .retorno-panel { display: none; background: var(--bg-panel); border: 2px solid var(--amarelo-destaque); border-radius: 12px; padding: 24px; width: 100%; max-width: 500px; margin-top: 16px; animation: fadeIn .2s ease; }
 .retorno-title { font-size: 13px; color: var(--amarelo-destaque); font-weight: bold; letter-spacing: 2px; margin-bottom: 14px; text-align: center; }
 .retorno-select { width: 100%; padding: 12px; background: var(--bg-page); border: 1px solid var(--border); color: var(--branco); border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 13px; outline: none; margin-bottom: 12px; }
@@ -113,7 +108,6 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
 .retorno-btns { display: flex; gap: 8px; }
 .retorno-btn-confirm { flex: 1; padding: 12px; background: var(--amarelo-destaque); color: #000; border: none; border-radius: 6px; font-family: 'DM Mono', monospace; font-weight: bold; cursor: pointer; font-size: 13px; }
 .retorno-btn-cancel { padding: 12px 20px; background: transparent; border: 1px solid var(--border); color: var(--texto-sec); border-radius: 6px; font-family: 'DM Mono', monospace; cursor: pointer; font-size: 13px; }
-
 .sub-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
 .sub-tab { padding: 8px 20px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-panel); color: var(--texto-sec); font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; letter-spacing: 1px; transition: all .2s; }
 .sub-tab.active { border-color: var(--cinza-destaque); background: rgba(204, 204, 204, 0.1); color: var(--cinza-destaque); }
@@ -140,46 +134,40 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
 .tabela-nativa .titulo-linha { text-align: left; color: var(--texto-sec); }
 .tabela-nativa tfoot { background: #161616; font-weight: bold; }
 .tabela-nativa tfoot td { color: var(--cinza-destaque); border-top: 2px solid var(--border); }
-#tabela-vins th { text-align: left; }
-#tabela-vins td { text-align: left; }
+#tabela-vins th { text-align: center; }
+#tabela-vins td { text-align: center; }
 .tabela-label { font-size: 12px; color: var(--texto-sec); letter-spacing: 2px; margin-bottom: 12px; }
-
-/* MODAIS */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
 .modal-overlay.show { display: flex; }
-.modal { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 14px; padding: 32px 40px; max-width: 400px; width: 90%; text-align: center; }
+.modal { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 14px; padding: 32px 40px; max-width: 450px; width: 90%; text-align: center; }
 .modal h2 { font-size: 18px; color: var(--vermelho-suave); letter-spacing: 2px; margin-bottom: 16px; }
 .modal h2.massiva-title-modal { color: var(--verde-suave); }
+.modal h2.bloqueio-title-modal { color: var(--amarelo-destaque); }
 .modal p { font-size: 13px; color: var(--texto-sec); letter-spacing: 1px; margin-bottom: 24px; line-height: 1.7; }
 .modal-btns { display: flex; gap: 12px; justify-content: center; }
 .modal-btn { padding: 12px 24px; border-radius: 8px; border: none; font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 1px; }
 .modal-btn.confirm { background: var(--vermelho-suave); color: #fff; }
 .modal-btn.confirm-massiva { background: var(--verde-suave); color: #000; }
+.modal-btn.confirm-bloqueio { background: var(--amarelo-destaque); color: #000; }
 .modal-btn.cancel { background: var(--bg-page); border: 1px solid var(--border); color: var(--branco); }
-
 .btn-filter-massiva { padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-panel); color: var(--texto-sec); font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 700; cursor: pointer; margin-bottom: 12px; letter-spacing: 1px; transition: all .2s; }
 .btn-filter-massiva.active { border-color: var(--vermelho-suave); background: rgba(255, 92, 92, 0.1); color: var(--vermelho-suave); }
-
 .massiva-config-wrap, .user-config-wrap { width: 100%; max-width: 600px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
 .massiva-textarea { width: 100%; height: 250px; background: var(--bg-page); border: 1px solid var(--border); border-radius: 8px; padding: 16px; color: var(--branco); font-family: 'DM Mono', monospace; font-size: 14px; outline: none; resize: none; margin-bottom: 16px; }
 .massiva-textarea:focus { border-color: var(--vermelho-suave); }
 .btn-massiva-save { width: 100%; padding: 14px; background: var(--vermelho-fosco); color: #fff; border: none; border-radius: 8px; font-family: 'DM Mono', monospace; font-weight: bold; font-size: 14px; cursor: pointer; letter-spacing: 1px; }
-
 .input-meta-live { width: 50px; background: var(--bg-page); border: 1px solid var(--border); color: var(--branco); text-align: center; font-family: 'DM Mono', monospace; font-size: 13px; border-radius: 4px; padding: 2px; }
 .btn-del-row { background: transparent; border: none; color: var(--vermelho-suave); cursor: pointer; font-weight: bold; font-family: 'DM Mono', monospace; padding: 2px 6px; }
 .user-select { width: 100%; padding: 12px; background: var(--bg-page); border: 1px solid var(--border); color: var(--branco); border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 14px; outline: none; margin-bottom: 16px; }
-
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-page); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 </style>
-
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body>
-
 <div class="login-overlay" id="login-overlay">
   <div class="login-box">
     <div class="login-title">Controle de Produção • Acesso</div>
@@ -192,9 +180,8 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
     <div class="login-erro" id="login-erro">&#10006; USUÁRIO OU SENHA INCORRETOS</div>
   </div>
 </div>
-
 <div class="app-container" id="app-container">
-
+  
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <h2>&#9888; INICIAR NOVO DIA</h2>
@@ -212,6 +199,16 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
       <p>A lista de controle de massiva foi salva com sucesso no banco de dados e sincronizada na rede.</p>
       <div class="modal-btns">
         <button class="modal-btn confirm-massiva" onclick="fecharModalMassiva()">CONCLUÍDO</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-bloqueio-overlay">
+    <div class="modal">
+      <h2 class="bloqueio-title-modal">&#9888; ACESSO RESTRITO</h2>
+      <p id="bloqueio-mensagem-texto">Seu nível de acesso não tem permissão para essa ação.</p>
+      <div class="modal-btns">
+        <button class="modal-btn confirm-bloqueio" onclick="fecharModalBloqueio()">CONCLUÍDO</button>
       </div>
     </div>
   </div>
@@ -244,7 +241,6 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
       </div>
     </div>
   </div>
-
   <div class="turno-bar">
     <span class="turno-label">VISUALIZAR TURNO:</span>
     <div class="turno-btns">
@@ -253,34 +249,30 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
       <button class="turno-btn" id="t-btn-3" onclick="selecionarTurno(3)">3&#186; TURNO</button>
     </div>
     <span class="turno-info" id="turno-info-label">06:00 – 15:48</span>
-    <button class="btn-novo-dia" id="btn-novo-dia" onclick="abrirModal()">&#8634; INICIAR NOVO DIA</button>
+    <button class="btn-novo-dia" id="btn-novo-dia" onclick="tentarExecutarAcaoRestrita(abrirModal)">&#8634; INICIAR NOVO DIA</button>
   </div>
-
   <div class="nav" id="nav-bar">
     <button class="nav-btn active" onclick="abrirAba('lancamento')">&#11041; LANÇAMENTO</button>
     <button class="nav-btn" onclick="abrirAba('alinhamento')">&#9638; ALINHAMENTO</button>
     <button class="nav-btn" onclick="abrirAba('indicador')">&#10792; INDICADOR</button>
-    <button class="nav-btn" id="nav-btn-massiva" onclick="abrirAba('massiva')">&#9888; CONTROLE DE MASSIVA</button>
-    <button class="nav-btn" id="nav-btn-usuarios" onclick="abrirAba('usuarios')">&#128101; GERENCIAR USUÁRIOS</button>
+    <button class="nav-btn" id="nav-btn-massiva" onclick="abrirAbaComVerificacao('massiva')">&#9888; CONTROLE DE MASSIVA</button>
+    <button class="nav-btn" id="nav-btn-usuarios" onclick="abrirAbaComVerificacao('usuarios')">&#128101; GERENCIAR USUÁRIOS</button>
   </div>
-
   <div class="content">
     <div class="aba active" id="aba-lancamento">
       <div class="lancamento-wrap">
         <div class="relogio" id="relogio">00:00:00</div>
         <div class="turno-ativo-badge" id="turno-badge">1&#186; TURNO • 06:00 – 15:48</div>
         <div class="alin-btns">
-          <button class="alin-btn active" id="btn-alin-1" onclick="selecionarAlin('ALINHAMENTO 1')">ALINHAMENTO 1</button>
-          <button class="alin-btn" id="btn-alin-2" onclick="selecionarAlin('ALINHAMENTO 2')">ALINHAMENTO 2</button>
+          <button class="alin-btn active btn-azul" id="btn-alin-1" onclick="selecionarAlin('ALINHAMENTO 1')">ALINHAMENTO 1</button>
+          <button class="alin-btn btn-roxo" id="btn-alin-2" onclick="selecionarAlin('ALINHAMENTO 2')">ALINHAMENTO 2</button>
         </div>
         <div class="form-wrap">
           <div class="form-label">Bipe ou digite o VIN</div>
-          <input id="vin-input" type="text" placeholder="VIN DO VEÍCULO" autocomplete="off" onkeydown="if(event.key==='Enter') lancar()">
-          <button class="btn-lancar" onclick="lancar()">LANÇAR</button>
+          <input id="vin-input" class="input-azul" type="text" placeholder="VIN DO VEÍCULO" autocomplete="off" onkeydown="if(event.key==='Enter') lancar()">
+          <button class="btn-lancar btn-lancar-azul" id="btn-lancar-principal" onclick="lancar()">LANÇAR</button>
         </div>
-        
         <div id="feedback" style="display:none"></div>
-
         <div class="retorno-panel" id="retorno-panel">
           <div class="retorno-title">&#9888; VEÍCULO REPETIDO: SELECIONE O RETORNO</div>
           <select class="retorno-select" id="retorno-motivo" onchange="verificarOutroMotivo(this.value)">
@@ -295,7 +287,6 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
             <button class="retorno-btn-cancel" onclick="cancelarRetorno()">CANCELAR</button>
           </div>
         </div>
-
         <div class="contadores">
           <div class="contador">
             <div class="contador-num" id="cnt-alin1">0</div>
@@ -308,7 +299,6 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
         </div>
       </div>
     </div>
-
     <div class="aba" id="aba-alinhamento">
       <div class="search-container">
         <input type="text" class="search-input" id="search-vin" placeholder="DIGITE O VIN PARA BUSCAR..." oninput="pesquisarVIN(this.value)">
@@ -325,11 +315,20 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
         <button class="btn-filter-massiva" id="btn-filter-massiva" onclick="toggleFiltroMassiva()">Filtrar Massiva</button>
       </div>
       <table class="tabela-nativa" id="tabela-vins">
-        <thead><tr><th>#</th><th>VIN</th><th>HORÁRIO</th><th>FAIXA</th><th>TURNO</th><th>OBS/RETORNO</th><th class="th-admin-only" style="display:none;">AÇÃO</th></tr></thead>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>VIN</th>
+            <th>HORÁRIO</th>
+            <th>FAIXA</th>
+            <th>TURNO</th>
+            <th>OBS/RETORNO</th>
+            <th>AÇÃO</th>
+          </tr>
+        </thead>
         <tbody id="tabela-body"></tbody>
       </table>
     </div>
-
     <div class="aba" id="aba-indicador">
       <div class="search-container">
         <input type="text" class="search-input" id="search-vin-ind" placeholder="DIGITE O VIN PARA BUSCAR..." oninput="pesquisarVIN(this.value)">
@@ -342,15 +341,13 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
       <div class="tabela-label" style="font-size:14px; color:var(--cinza-destaque); font-weight:bold; margin-top:24px;">INDICADOR GERAL — RESUMO DOS TURNOS</div>
       <div id="ind-geral-wrap"></div>
     </div>
-
     <div class="aba" id="aba-massiva">
       <div style="font-size:16px; font-weight:700; color:var(--branco); letter-spacing:2px; margin-bottom:12px;">CONFIGURAÇÃO DA LISTA MASSIVA</div>
       <div class="massiva-config-wrap">
         <textarea class="massiva-textarea" id="massiva-list-input" placeholder="Cole os VINs aqui..."></textarea>
-        <button class="btn-massiva-save" onclick="salvarListaMassivaFirebase()">SALVAR LISTA DE MASSIVA</button>
+        <button class="btn-massiva-save" onclick="tentarExecutarAcaoRestrita(salvarListaMassivaFirebase)">SALVAR LISTA DE MASSIVA</button>
       </div>
     </div>
-
     <div class="aba" id="aba-usuarios">
       <div style="font-size:16px; font-weight:700; color:var(--branco); letter-spacing:2px; margin-bottom:12px;">CADASTRAR NOVO USUÁRIO</div>
       <div class="user-config-wrap">
@@ -361,7 +358,7 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
           <option value="lider">LÍDER (ACOMPANHAMENTO/MODERAÇÃO COMPLETA)</option>
           <option value="admin">ADMINISTRADOR (DIREITOS TOTAIS DE EDIÇÃO)</option>
         </select>
-        <button class="btn-massiva-save" style="background:var(--cinza-destaque); color:#000;" onclick="cadastrarUsuarioNovo()">SALVAR USUÁRIO</button>
+        <button class="btn-massiva-save" style="background:var(--cinza-destaque); color:#000;" onclick="tentarExecutarAcaoRestrita(cadastrarUsuarioNovo)">SALVAR USUÁRIO</button>
       </div>
       <div class="tabela-label">USUÁRIOS CADASTRADOS NO SISTEMA</div>
       <table class="tabela-nativa" style="max-width:800px;">
@@ -371,25 +368,20 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
     </div>
   </div>
 </div>
-
 <script>
-const firebaseConfig = {
-  databaseURL: "https://controle-producao-79f64-default-rtdb.firebaseio.com/"
-};
-
+const firebaseConfig = { databaseURL: "https://controle-producao-79f64-default-rtdb.firebaseio.com/" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-
 let currentUserRole = "operador";
 let listaUsuariosCadastrados = [];
 let firebaseConectado = false;
+let serverTimeOffset = 0; // Armazena a diferença de tempo com o servidor
 
 const TURNOS_INFO = {
   1: { label: "1º TURNO", range: "06:00 – 15:48" },
   2: { label: "2º TURNO", range: "15:48 – 00:00" },
   3: { label: "3º TURNO", range: "01:00 – 05:00" }
 };
-
 let FAIXAS = [
   { id: "t1_06", turno: 1, lbl: "06h", mIni: 360, mFim: 420, meta: 28 },
   { id: "t1_07", turno: 1, lbl: "07h", mIni: 420, mFim: 480, meta: 30 },
@@ -401,7 +393,6 @@ let FAIXAS = [
   { id: "t1_13", turno: 1, lbl: "13h", mIni: 780, mFim: 840, meta: 30 },
   { id: "t1_14", turno: 1, lbl: "14h", mIni: 840, mFim: 900, meta: 28 },
   { id: "t1_15", turno: 1, lbl: "15h", mIni: 900, mFim: 960, meta: 20 },
-  
   { id: "t2_16", turno: 2, lbl: "16h", mIni: 960, mFim: 1020, meta: 20 },
   { id: "t2_17", turno: 2, lbl: "17h", mIni: 1020, mFim: 1080, meta: 21 },
   { id: "t2_18", turno: 2, lbl: "18h", mIni: 1080, mFim: 1140, meta: 19 },
@@ -411,22 +402,13 @@ let FAIXAS = [
   { id: "t2_22", turno: 2, lbl: "22h", mIni: 1320, mFim: 1380, meta: 20 },
   { id: "t2_23", turno: 2, lbl: "23h", mIni: 1380, mFim: 1440, meta: 21 },
   { id: "t2_00", turno: 2, lbl: "00h", mIni: 1440, mFim: 1500, meta: 21 },
-  
   { id: "t3_01", turno: 3, lbl: "01h", mIni: 60, mFim: 120, meta: 17 },
   { id: "t3_02", turno: 3, lbl: "02h", mIni: 120, mFim: 180, meta: 17 },
   { id: "t3_03", turno: 3, lbl: "03h", mIni: 180, mFim: 240, meta: 11 },
   { id: "t3_04", turno: 3, lbl: "04h", mIni: 240, mFim: 300, meta: 17 },
   { id: "t3_05", turno: 3, lbl: "05h", mIni: 300, mFim: 360, meta: 17 }
 ];
-
-const PREFIXOS_MODELOS = {
-  "T-19": ["95PB"],
-  "T-1E": ["95PE"],
-  "T-18": ["95PF"],
-  "UNI-T": ["95PL"],
-  "CS75": ["95PK"]
-};
-
+const PREFIXOS_MODELOS = { "T-19": ["95PB"], "T-1E": ["95PE"], "T-18": ["95PF"], "UNI-T": ["95PL"], "CS75": ["95PK"] };
 let veiculos = [];
 let turnoView = 1;
 let alinSelecionado = "ALINHAMENTO 1";
@@ -436,543 +418,198 @@ let vinPendenteRetorno = null;
 let vinsMassivaLista = [];
 let filtroMassivaAtivo = false;
 
-// OTIMIZAÇÃO: ESCUTA METAS GLOBALMENTE DO FIREBASE
-function sincronizarMetasGlobais() {
-  db.ref("config/metas").on("value", (snapshot) => {
-    const metasLidas = snapshot.val();
-    if (metasLidas) {
-      FAIXAS.forEach(f => {
-        if (metasLidas[f.id] !== undefined) f.meta = metasLidas[f.id];
-      });
-      renderIndicador();
-    }
-  });
-}
-
-function atualizarMetaLive(faixaId, novaMeta) {
-  if (currentUserRole !== "admin" && currentUserRole !== "lider") return;
-  const val = parseInt(novaMeta) || 0;
-  db.ref(`config/metas/${faixaId}`).set(val);
-}
-
-// OTIMIZAÇÃO: ESCUTA LISTA DE MASSIVA DIRETO DO FIREBASE (Sincronia Global)
-function sincronizarListaMassivaGlobal() {
-  db.ref("config/massiva").on("value", (snapshot) => {
-    const dados = snapshot.val();
-    vinsMassivaLista = dados ? dados.split("\n").map(v => v.trim().toUpperCase()).filter(v => v.length > 0) : [];
-    const textarea = document.getElementById("massiva-list-input");
-    if (textarea && document.activeElement !== textarea) {
-      textarea.value = vinsMassivaLista.join("\n");
-    }
-    atualizarContadores();
-    renderAlinhamento();
-  });
-}
-
-function salvarListaMassivaFirebase() {
-  const texto = document.getElementById("massiva-list-input").value;
-  db.ref("config/massiva").set(texto).then(() => {
-    document.getElementById("modal-massiva-overlay").classList.add("show");
-  });
-}
-
-// GESTÃO DE ACESSOS E USUÁRIOS
-function inicializarUsuariosSistema() {
-  const armazenados = localStorage.getItem("ali_usuarios_lista");
-  if (armazenados) {
-    listaUsuariosCadastrados = JSON.parse(armazenados);
-  } else {
-    listaUsuariosCadastrados = [
-      { user: "pedro.iteadjoseph", pass: "caoa9717**", role: "admin", nativo: true },
-      { user: "lider.caoa", pass: "caoa2026**", role: "lider", nativo: true },
-      { user: "alinhamento.fai", pass: "caoa2026**", role: "operador", nativo: true }
-    ];
-    localStorage.setItem("ali_usuarios_lista", JSON.stringify(listaUsuariosCadastrados));
+function verificarPermissao() { return currentUserRole === "admin" || currentUserRole === "lider"; }
+function abrirModalBloqueio(mensagemCustomizada) { document.getElementById("bloqueio-mensagem-texto").innerHTML = mensagemCustomizada || "Seu nível de acesso não tem permissão para essa ação."; document.getElementById("modal-bloqueio-overlay").classList.add("show"); }
+function fecharModalBloqueio() { document.getElementById("modal-bloqueio-overlay").classList.remove("show"); }
+function tentarExecutarAcaoRestrita(funcaoSucesso) { if (verificarPermissao()) { funcaoSucesso(); } else { abrirModalBloqueio("Seu nível de acesso não tem permissão para essa ação."); } }
+function abrirAbaComVerificacao(id) {
+  if (id === "massiva" || id === "usuarios") {
+    if (id === "usuarios" && currentUserRole !== "admin") { abrirModalBloqueio("Nível de acesso insuficiente.<br>Apenas <strong>ADMINISTRADORES</strong> podem gerenciar os usuários do sistema."); return; }
+    if (!verificarPermissao()) { abrirModalBloqueio("Nível de acesso insuficiente.<br>Apenas <strong>LÍDERES</strong> ou <strong>ADMINISTRADORES</strong> podem acessar as configurações de massiva."); return; }
   }
-  alimentarSelectLogin();
+  abrirAba(id);
 }
 
-function alimentarSelectLogin() {
-  const select = document.getElementById("login-user-select");
-  if(!select) return;
-  select.innerHTML = listaUsuariosCadastrados.map(x => `<option value="${x.user}">${x.user.toUpperCase()} (${x.role.toUpperCase()})</option>`).join("");
+// ---- LÓGICA DE FUSO HORÁRIO TRAVADO ----
+function getHoraAtualServidor() { return Date.now() + serverTimeOffset; }
+function getDataHoraBrasil(ts) {
+  const dt = new Date(ts);
+  // Pega o tempo UTC real e subtrai 3 horas, garantindo sempre o fuso de Brasília (Anápolis) independentemente de onde o celular do operador esteja configurado
+  const utc = dt.getTime() + (dt.getTimezoneOffset() * 60000);
+  return new Date(utc - (3600000 * 3));
 }
-
-function toggleMostrarSenha() {
-  const input = document.getElementById("login-pass");
-  const btn = document.getElementById("btn-toggle-pass");
-  if (input.type === "password") { input.type = "text"; btn.textContent = "[OCULTAR]"; }
-  else { input.type = "password"; btn.textContent = "[EXIBIR]"; }
+function getMinutosDoDia(ts) { const d = getDataHoraBrasil(ts); return d.getHours() * 60 + d.getMinutes(); }
+function horaFmt(ts) { const d = getDataHoraBrasil(ts); return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0'); }
+function obterDataOperacionalString(ts) { 
+  const d = getDataHoraBrasil(ts); 
+  if (d.getHours() < 6) d.setDate(d.getDate() - 1); 
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,'0') + "-" + String(d.getDate()).padStart(2,'0');
 }
-
-function checarSessaoAtiva() {
-  const sessaoUser = localStorage.getItem("ali_sessao_user");
-  const sessaoRole = localStorage.getItem("ali_sessao_role");
-  if (sessaoUser && sessaoRole) {
-    currentUserRole = sessaoRole;
-    liberarAcessoApp(sessaoUser);
-  }
-}
-
-function executarLogout() {
-  localStorage.removeItem("ali_sessao_user");
-  localStorage.removeItem("ali_sessao_role");
-  document.getElementById("app-container").style.display = "none";
-  document.getElementById("login-overlay").style.display = "flex";
-  document.getElementById("login-pass").value = "";
-  document.getElementById("login-erro").style.display = "none";
-  document.getElementById("login-pass").type = "password";
-  document.getElementById("btn-toggle-pass").textContent = "[EXIBIR]";
-}
-
-function executarLogin() {
-  const u = document.getElementById("login-user-select").value;
-  const p = document.getElementById("login-pass").value;
-  const erro = document.getElementById("login-erro");
-  const contaEncontrada = listaUsuariosCadastrados.find(x => x.user === u && x.pass === p);
-
-  if (contaEncontrada) {
-    currentUserRole = contaEncontrada.role;
-    localStorage.setItem("ali_sessao_user", contaEncontrada.user.toUpperCase());
-    localStorage.setItem("ali_sessao_role", contaEncontrada.role);
-    liberarAcessoApp(contaEncontrada.user.toUpperCase());
-  } else {
-    erro.style.display = "block";
-  }
-}
-
-function liberarAcessoApp(usernameDisplay) {
-  document.getElementById("login-overlay").style.display = "none";
-  document.getElementById("app-container").style.display = "flex";
-  document.getElementById("user-status-display").textContent = usernameDisplay;
-
-  if (currentUserRole === "admin" || currentUserRole === "lider") {
-    document.getElementById("btn-novo-dia").style.display = "block";
-    document.getElementById("nav-btn-massiva").style.display = "block";
-    document.querySelectorAll(".th-admin-only").forEach(el => el.style.display = "table-cell");
-  } else {
-    document.getElementById("btn-novo-dia").style.display = "none";
-    document.getElementById("nav-btn-massiva").style.display = "none";
-    document.querySelectorAll(".th-admin-only").forEach(el => el.style.display = "none");
-  }
-
-  if (currentUserRole === "admin") document.getElementById("nav-btn-usuarios").style.display = "block";
-  else document.getElementById("nav-btn-usuarios").style.display = "none";
-  
-  conectarSincronizacaoFirebase();
-  renderTabelaUsuarios();
-}
-
-function cadastrarUsuarioNovo() {
-  if (currentUserRole !== "admin") return;
-  const nameIn = document.getElementById("new-user-name");
-  const passIn = document.getElementById("new-user-pass");
-  const roleIn = document.getElementById("new-user-role");
-  const u = nameIn.value.trim().toLowerCase();
-  const p = passIn.value;
-  const r = roleIn.value;
-
-  if (!u || !p) { alert("Preencha todos os campos."); return; }
-  if (listaUsuariosCadastrados.some(x => x.user === u)) { alert("Usuário já existe."); return; }
-
-  listaUsuariosCadastrados.push({ user: u, pass: p, role: r, nativo: false });
-  localStorage.setItem("ali_usuarios_lista", JSON.stringify(listaUsuariosCadastrados));
-  nameIn.value = ""; passIn.value = "";
-  alimentarSelectLogin();
-  renderTabelaUsuarios();
-}
-
-function excluirUsuario(username) {
-  if (currentUserRole !== "admin") return;
-  listaUsuariosCadastrados = listaUsuariosCadastrados.filter(x => x.user !== username);
-  localStorage.setItem("ali_usuarios_lista", JSON.stringify(listaUsuariosCadastrados));
-  alimentarSelectLogin();
-  renderTabelaUsuarios();
-}
-
-function renderTabelaUsuarios() {
-  const tbody = document.getElementById("tabela-usuarios-body");
-  if(!tbody) return;
-  tbody.innerHTML = listaUsuariosCadastrados.map(x => `
-    <tr>
-      <td style="text-align:left; font-weight:bold; padding-left:24px;">${x.user}</td>
-      <td><span style="color:${x.role==='admin' ? 'var(--amarelo-destaque)' : (x.role === 'lider' ? 'var(--verde-suave)' : 'var(--branco)')}">${x.role.toUpperCase()}</span></td>
-      <td>${x.nativo ? '<span style="color:var(--texto-sec)">PROTEGIDO</span>' : `<button class="btn-del-row" onclick="excluirUsuario('${x.user}')">[REMOVER]</button>`}</td>
-    </tr>
-  `).join("");
-}
-
-// ARQUITETURA BLINDADA DE SINCRONIZAÇÃO EM TEMPO REAL
-function conectarSincronizacaoFirebase() {
-  if (firebaseConectado) return;
-  firebaseConectado = true;
-
-  sincronizarMetasGlobais();
-  sincronizarListaMassivaGlobal();
-
-  db.ref("producao/veiculos").on("value", (snapshot) => {
-    const dados = snapshot.val();
-    veiculos = dados ? Object.keys(dados).map(key => ({ idFirebase: key, ...dados[key] })) : [];
-    atualizarContadores();
-    renderAlinhamento();
-    renderIndicador();
-  });
-}
-
-function fecharModalMassiva() { document.getElementById("modal-massiva-overlay").classList.remove("show"); }
-function toggleFiltroMassiva() {
-  filtroMassivaAtivo = !filtroMassivaAtivo;
-  const btn = document.getElementById("btn-filter-massiva");
-  if (filtroMassivaAtivo) btn.classList.add("active");
-  else btn.classList.remove("active");
-  renderAlinhamento();
-}
-
-function getMinutosDoDia(ts) {
-  const d = new Date(ts);
-  return d.getHours() * 60 + d.getMinutes();
-}
-
-function identificarFaixa(ts) {
-  const m = getMinutosDoDia(ts);
-  return FAIXAS.find(f => m >= f.mIni && m < f.mFim) || FAIXAS[0];
-}
-
-function horaFmt(ts) {
-  return new Date(ts).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
-}
-
-function obterDataOperacionalString(ts) {
-  const d = new Date(ts);
-  // Se for entre 00:00 e 05:59, operacionalmente ainda pertence ao dia anterior
-  if (d.getHours() < 6) {
-    d.setDate(d.getDate() - 1);
-  }
-  return d.toISOString().split('T')[0];
-}
-
 function atualizarRelogio() {
-  const agora = Date.now();
-  document.getElementById("relogio").textContent = new Date(agora).toLocaleTimeString("pt-BR");
-  const faixaAtual = identificarFaixa(agora);
-  if (turnoRealAtual !== faixaAtual.turno) {
-    turnoRealAtual = faixaAtual.turno;
-    document.getElementById("turno-badge").textContent = `${TURNOS_INFO[turnoRealAtual].label} • ${TURNOS_INFO[turnoRealAtual].range}`;
+  const agoraRef = getHoraAtualServidor();
+  const dBrasil = getDataHoraBrasil(agoraRef);
+  document.getElementById("relogio").textContent = dBrasil.getHours().toString().padStart(2,'0') + ':' + dBrasil.getMinutes().toString().padStart(2,'0') + ':' + dBrasil.getSeconds().toString().padStart(2,'0');
+  const faixaAtual = identificarFaixa(agoraRef); 
+  if (turnoRealAtual !== faixaAtual.turno) { 
+    turnoRealAtual = faixaAtual.turno; 
+    document.getElementById("turno-badge").textContent = `${TURNOS_INFO[turnoRealAtual].label} • ${TURNOS_INFO[turnoRealAtual].range}`; 
   }
 }
 setInterval(atualizarRelogio, 1000);
+// ------------------------------------------
 
-function selecionarTurno(n) {
-  turnoView = n;
-  localStorage.setItem("ali_turno", turnoView);
-  [1,2,3].forEach(i => { document.getElementById("t-btn-"+i).className = "turno-btn"+(i===n?" active":""); });
-  document.getElementById("turno-info-label").textContent = TURNOS_INFO[n].range;
-  atualizarContadores();
-  renderAlinhamento();
-  renderIndicador();
+function sincronizarMetasGlobais() { db.ref("config/metas").on("value", (snapshot) => { const metasLidas = snapshot.val(); if (metasLidas) { FAIXAS.forEach(f => { if (metasLidas[f.id] !== undefined) f.meta = metasLidas[f.id]; }); renderIndicador(); } }); }
+function atualizarMetaLive(faixaId, novaMeta) { if (!verificarPermissao()) { abrirModalBloqueio("Nível de acesso insuficiente."); renderIndicador(); return; } db.ref(`config/metas/${faixaId}`).set(parseInt(novaMeta) || 0); }
+function sincronizarListaMassivaGlobal() { db.ref("config/massiva").on("value", (snapshot) => { const dados = snapshot.val(); vinsMassivaLista = dados ? dados.split("\n").map(v => v.trim().toUpperCase()).filter(v => v.length > 0) : []; const textarea = document.getElementById("massiva-list-input"); if (textarea && document.activeElement !== textarea) { textarea.value = vinsMassivaLista.join("\n"); } atualizarContadores(); renderAlinhamento(); }); }
+function salvarListaMassivaFirebase() { const texto = document.getElementById("massiva-list-input").value; db.ref("config/massiva").set(texto).then(() => { document.getElementById("modal-massiva-overlay").classList.add("show"); }); }
+function inicializarUsuariosSistema() { const armazenados = localStorage.getItem("ali_usuarios_lista"); if (armazenados) { listaUsuariosCadastrados = JSON.parse(armazenados); } else { listaUsuariosCadastrados = [ { user: "pedro.iteadjoseph", pass: "caoa9717**", role: "admin", nativo: true }, { user: "lider.caoa", pass: "caoa2026**", role: "lider", nativo: true }, { user: "alinhamento.fai", pass: "caoa2026**", role: "operador", nativo: true } ]; localStorage.setItem("ali_usuarios_lista", JSON.stringify(listaUsuariosCadastrados)); } alimentarSelectLogin(); }
+function alimentarSelectLogin() { const select = document.getElementById("login-user-select"); if(!select) return; select.innerHTML = listaUsuariosCadastrados.map(x => `<option value="${x.user}">${x.user.toUpperCase()} (${x.role.toUpperCase()})</option>`).join(""); }
+function toggleMostrarSenha() { const input = document.getElementById("login-pass"); const btn = document.getElementById("btn-toggle-pass"); if (input.type === "password") { input.type = "text"; btn.textContent = "[OCULTAR]"; } else { input.type = "password"; btn.textContent = "[EXIBIR]"; } }
+function checarSessaoAtiva() { const sessaoUser = localStorage.getItem("ali_sessao_user"); const sessaoRole = localStorage.getItem("ali_sessao_role"); if (sessaoUser && sessaoRole) { currentUserRole = sessaoRole; liberarAcessoApp(sessaoUser); } }
+function executarLogout() { localStorage.removeItem("ali_sessao_user"); localStorage.removeItem("ali_sessao_role"); document.getElementById("app-container").style.display = "none"; document.getElementById("login-overlay").style.display = "flex"; document.getElementById("login-pass").value = ""; document.getElementById("login-erro").style.display = "none"; }
+function executarLogin() { const u = document.getElementById("login-user-select").value; const p = document.getElementById("login-pass").value; const contaEncontrada = listaUsuariosCadastrados.find(x => x.user === u && x.pass === p); if (contaEncontrada) { currentUserRole = contaEncontrada.role; localStorage.setItem("ali_sessao_user", contaEncontrada.user.toUpperCase()); localStorage.setItem("ali_sessao_role", contaEncontrada.role); liberarAcessoApp(contaEncontrada.user.toUpperCase()); } else { document.getElementById("login-erro").style.display = "block"; } }
+
+let renderTimer = null;
+function atualizarPainelLote() {
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(() => { atualizarContadores(); renderAlinhamento(); renderIndicador(); }, 50);
 }
 
-function abrirAba(id) {
-  if (currentUserRole === "operador" && (id === "massiva" || id === "usuarios")) return;
-  if (currentUserRole === "lider" && id === "usuarios") return;
-
-  document.querySelectorAll(".aba").forEach(a => a.classList.remove("active"));
-  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-  document.getElementById("aba-"+id).classList.add("active");
-  
-  const navBtns = document.querySelectorAll(".nav-btn");
-  const idx = ["lancamento","alinhamento","indicador","massiva","usuarios"].indexOf(id);
-  if(idx !== -1) navBtns[idx].classList.add("active");
-
-  if (id==="alinhamento") renderAlinhamento();
-  if (id==="indicador") renderIndicador();
-  if (id==="lancamento") setTimeout(()=>document.getElementById("vin-input").focus(),100);
+function conectarSincronizacaoFirebase() {
+  if (firebaseConectado) return; firebaseConectado = true;
+  db.ref(".info/serverTimeOffset").on("value", snap => { serverTimeOffset = snap.val() || 0; });
+  sincronizarMetasGlobais(); 
+  sincronizarListaMassivaGlobal();
+  const ref = db.ref("producao/veiculos");
+  ref.on("child_added", (snapshot) => { veiculos.push({ idFirebase: snapshot.key, ...snapshot.val() }); atualizarPainelLote(); });
+  ref.on("child_removed", (snapshot) => { veiculos = veiculos.filter(v => v.idFirebase !== snapshot.key); atualizarPainelLote(); });
 }
 
-function selecionarAlin(alin) {
-  alinSelecionado = alin;
-  document.getElementById("btn-alin-1").className = "alin-btn"+(alin==="ALINHAMENTO 1"?" active":"");
-  document.getElementById("btn-alin-2").className = "alin-btn"+(alin==="ALINHAMENTO 2"?" active":"");
-  document.getElementById("vin-input").focus();
-}
+function liberarAcessoApp(usernameDisplay) { document.getElementById("login-overlay").style.display = "none"; document.getElementById("app-container").style.display = "flex"; document.getElementById("user-status-display").textContent = usernameDisplay; conectarSincronizacaoFirebase(); renderTabelaUsuarios(); }
+function cadastrarUsuarioNovo() { if (currentUserRole !== "admin") return; const u = document.getElementById("new-user-name").value.trim().toLowerCase(); const p = document.getElementById("new-user-pass").value; const r = document.getElementById("new-user-role").value; if (!u || !p) { abrirModalBloqueio("Preencha todos os campos."); return; } listaUsuariosCadastrados.push({ user: u, pass: p, role: r, nativo: false }); localStorage.setItem("ali_usuarios_lista", JSON.stringify(listaUsuariosCadastrados)); alimentarSelectLogin(); renderTabelaUsuarios(); }
+function excluirUsuario(username) { if (currentUserRole !== "admin") return; listaUsuariosCadastrados = listaUsuariosCadastrados.filter(x => x.user !== username); localStorage.setItem("ali_usuarios_lista", JSON.stringify(listaUsuariosCadastrados)); alimentarSelectLogin(); renderTabelaUsuarios(); }
+function renderTabelaUsuarios() { const tbody = document.getElementById("tabela-usuarios-body"); if(!tbody) return; tbody.innerHTML = listaUsuariosCadastrados.map(x => `<tr><td style="text-align:left; font-weight:bold; padding-left:24px;">${x.user}</td><td>${x.role.toUpperCase()}</td><td>${x.nativo ? 'PROTEGIDO' : `<button class="btn-del-row" onclick="excluirUsuario('${x.user}')">[REMOVER]</button>`}</td></tr>`).join(""); }
+function fecharModalMassiva() { document.getElementById("modal-massiva-overlay").classList.remove("show"); }
+function toggleFiltroMassiva() { filtroMassivaAtivo = !filtroMassivaAtivo; const btn = document.getElementById("btn-filter-massiva"); if (filtroMassivaAtivo) btn.classList.add("active"); else btn.classList.remove("active"); renderAlinhamento(); }
 
+function identificarFaixa(ts) { const m = getMinutosDoDia(ts); return FAIXAS.find(f => m >= f.mIni && m < f.mFim) || FAIXAS[0]; }
+function selecionarTurno(n) { turnoView = n; localStorage.setItem("ali_turno", turnoView); [1,2,3].forEach(i => { document.getElementById("t-btn-"+i).className = "turno-btn"+(i===n?" active":""); }); document.getElementById("turno-info-label").textContent = TURNOS_INFO[n].range; atualizarContadores(); renderAlinhamento(); renderIndicador(); }
+function abrirAba(id) { document.querySelectorAll(".aba").forEach(a => a.classList.remove("active")); document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active")); document.getElementById("aba-"+id).classList.add("active"); const idx = ["lancamento","alinhamento","indicador","massiva","usuarios"].indexOf(id); if(idx !== -1) document.querySelectorAll(".nav-btn")[idx].classList.add("active"); if (id==="alinhamento") renderAlinhamento(); if (id==="indicador") renderIndicador(); if (id==="lancamento") setTimeout(()=>document.getElementById("vin-input").focus(),100); }
+
+// A Função que filtra os dados na aba de alinhamento
 function selecionarSubTab(alin) {
   subTabSelecionada = alin;
-  document.getElementById("subtab-1").className = "sub-tab"+(alin==="ALINHAMENTO 1"?" active":"");
-  document.getElementById("subtab-2").className = "sub-tab"+(alin==="ALINHAMENTO 2"?" active":"");
+  document.getElementById("subtab-1").className = "sub-tab" + (alin === "ALINHAMENTO 1" ? " active" : "");
+  document.getElementById("subtab-2").className = "sub-tab" + (alin === "ALINHAMENTO 2" ? " active" : "");
   renderAlinhamento();
+}
+
+function selecionarAlin(alin) { 
+  alinSelecionado = alin; 
+  const btn1 = document.getElementById("btn-alin-1");
+  const btn2 = document.getElementById("btn-alin-2");
+  const input = document.getElementById("vin-input");
+  const btnLancar = document.getElementById("btn-lancar-principal");
+
+  if (alin === 'ALINHAMENTO 1') {
+    btn1.className = "alin-btn active btn-azul";
+    btn2.className = "alin-btn btn-roxo";
+    input.className = "input-azul";
+    btnLancar.className = "btn-lancar btn-lancar-azul";
+  } else {
+    btn1.className = "alin-btn btn-azul";
+    btn2.className = "alin-btn active btn-roxo";
+    input.className = "input-roxo";
+    btnLancar.className = "btn-lancar btn-lancar-roxo";
+  }
+  input.focus(); 
 }
 
 function lancar() {
-  const input = document.getElementById("vin-input");
-  const vin = input.value.trim().toUpperCase();
-  if (!vin) return;
-  
+  const input = document.getElementById("vin-input"); const vin = input.value.trim().toUpperCase(); if (!vin) return;
   const dup = veiculos.find(v => v.vin === vin);
-  if (dup) {
-    vinPendenteRetorno = vin; 
-    mostrarFeedback("erro", vin, `REPETIDO. JÁ LANÇADO NO ${dup.alinhamento}.`);
-    document.getElementById("retorno-panel").style.display = "block";
-    document.getElementById("retorno-motivo").focus();
-    input.value = ""; 
-    return;
-  }
-  
-  executarLancamento(vin, "");
-  input.value = "";
+  if (dup) { vinPendenteRetorno = vin; mostrarFeedback("erro", vin, `REPETIDO NO ${dup.alinhamento}.`); document.getElementById("retorno-panel").style.display = "block"; input.value = ""; return; }
+  executarLancamento(vin, ""); input.value = "";
 }
-
-// INFRAESTRUTURA CORRIGIDA: SEGURANÇA CONTRA CONFLITOS DE HORÁRIO E RESET AUTOMÁTICO INDESTRUTÍVEL
 function executarLancamento(vin, motivoRetorno) {
-  // Obtém o timestamp oficial direto do servidor da Google para travar fraudes de horário local
-  const agoraRef = Date.now();
-  const faixaLida = identificarFaixa(agoraRef);
+  const agoraRef = getHoraAtualServidor(); 
+  const faixaLida = identificarFaixa(agoraRef); 
   const dataOpAtual = obterDataOperacionalString(agoraRef);
-
-  // INTERCEPTOR DE RESET AUTOMÁTICO: Se houver dados velhos na base de outro dia operacional, limpa antes de salvar o bipi
-  if (veiculos.length > 0) {
-    const amostraVelha = veiculos[0];
-    if (amostraVelha.dataOperacional && amostraVelha.dataOperacional !== dataOpAtual) {
-      db.ref("producao/veiculos").remove();
-      veiculos = [];
-    }
-  }
-  
-  const novo = {
-    vin: vin, 
-    alinhamento: alinSelecionado, 
-    timestamp: firebase.database.ServerValue.TIMESTAMP, // Usa carimbo imutável do servidor
-    turno: faixaLida.turno,
-    faixaId: faixaLida.id,
-    dataOperacional: dataOpAtual,
-    retorno: motivoRetorno ? true : false,
-    motivo: motivoRetorno || ""
-  };
-  
-  db.ref("producao/veiculos").push().set(novo, (error) => {
-    if (!error) mostrarFeedback("ok", "\u2713 " + vin, alinSelecionado + (motivoRetorno ? " [RETORNO]" : ""));
-    else mostrarFeedback("erro", "ERRO AO SALVAR", "Falha de rede.");
-  });
+  if (veiculos.length > 0 && veiculos[0].dataOperacional !== dataOpAtual) { db.ref("producao/veiculos").remove(); veiculos = []; }
+  const novo = { vin: vin, alinhamento: alinSelecionado, timestamp: firebase.database.ServerValue.TIMESTAMP, turno: faixaLida.turno, faixaId: faixaLida.id, dataOperacional: dataOpAtual, retorno: motivoRetorno?true:false, motivo: motivoRetorno||"" };
+  db.ref("producao/veiculos").push().set(novo, (error) => { if (!error) mostrarFeedback("ok", "\u2713 " + vin, alinSelecionado); });
 }
-
-function removerRegistroLive(idFirebase) {
-  if (currentUserRole !== "admin" && currentUserRole !== "lider") return;
-  db.ref("producao/veiculos/" + idFirebase).remove();
-}
-
-function verificarOutroMotivo(val) {
-  const campoOutro = document.getElementById("retorno-especificar");
-  if (val === "Outro motivo") { campoOutro.style.display = "block"; campoOutro.focus(); }
-  else campoOutro.style.display = "none";
-}
-
-function confirmarRetorno() {
-  let motivo = document.getElementById("retorno-motivo").value;
-  if (motivo === "Outro motivo") {
-    const custom = document.getElementById("retorno-especificar").value.trim();
-    motivo = custom ? "Outro: " + custom : "Outro motivo não especificado";
-  }
-  if (vinPendenteRetorno) { executarLancamento(vinPendenteRetorno, motivo); cancelarRetorno(); }
-}
-
-function cancelarRetorno() {
-  vinPendenteRetorno = null;
-  document.getElementById("retorno-panel").style.display = "none";
-  document.getElementById("retorno-especificar").style.display = "none";
-  document.getElementById("retorno-especificar").value = "";
-  document.getElementById("retorno-motivo").value = "Realinhar Veículo";
-  document.getElementById("vin-input").focus();
-}
-
-function pesquisarVIN(query) {
-  const q = query.trim().toUpperCase();
-  const statusAlin = document.getElementById("search-status");
-  const statusInd = document.getElementById("search-status-ind");
-  document.getElementById("search-vin").value = q;
-  document.getElementById("search-vin-ind").value = q;
-
-  if (!q) { statusAlin.innerHTML = ""; statusInd.innerHTML = ""; return; }
-  const passagens = veiculos.filter(v => v.vin.includes(q));
-  if (passagens.length === 0) {
-    const html = `<span class="search-result" style="background:rgba(255,92,92,0.1); color:var(--vermelho-suave)">&#10006; NÃO ENCONTRADO</span>`;
-    statusAlin.innerHTML = html; statusInd.innerHTML = html;
-  } else {
-    let detalhes = passagens.map(v => `${v.alinhamento} (${horaFmt(v.timestamp)})${v.retorno ? ' [R: '+v.motivo+']' : ''}`).join(" | ");
-    const html = `<span class="search-result" style="background:rgba(204,204,204,0.1); color:var(--amarelo-destaque)">&#10003; DETECTADO: ${detalhes}</span>`;
-    statusAlin.innerHTML = html; statusInd.innerHTML = html;
-  }
-}
-
-function atualizarContadores() {
-  const vT = veiculos.filter(v => v.turno === turnoView);
-  const totalMassivasBipadas = veiculos.filter(v => vinsMassivaLista.includes(v.vin)).length;
-  
-  document.getElementById("cnt-massiva").textContent = totalMassivasBipadas;
-  document.getElementById("cnt-alin1").textContent = vT.filter(v=>v.alinhamento==="ALINHAMENTO 1").length;
-  document.getElementById("cnt-alin2").textContent = vT.filter(v=>v.alinhamento==="ALINHAMENTO 2").length;
-  document.getElementById("cnt-parcial").textContent = vT.length;
-  document.getElementById("total-geral").textContent = veiculos.length;
-}
-
+function removerRegistroLive(idFirebase) { tentarExecutarAcaoRestrita(() => { db.ref("producao/veiculos/" + idFirebase).remove(); }); }
+function verificarOutroMotivo(val) { document.getElementById("retorno-especificar").style.display = val === "Outro motivo" ? "block" : "none"; }
+function confirmarRetorno() { let m = document.getElementById("retorno-motivo").value; if (m === "Outro motivo") m = document.getElementById("retorno-especificar").value.trim() || "Outro motivo"; if (vinPendenteRetorno) { executarLancamento(vinPendenteRetorno, m); cancelarRetorno(); } }
+function cancelarRetorno() { vinPendenteRetorno = null; document.getElementById("retorno-panel").style.display = "none"; document.getElementById("vin-input").focus(); }
+function pesquisarVIN(query) { const q = query.trim().toUpperCase(); const statusAlin = document.getElementById("search-status"); const statusInd = document.getElementById("search-status-ind"); document.getElementById("search-vin").value = q; document.getElementById("search-vin-ind").value = q; if (!q) { statusAlin.innerHTML = ""; statusInd.innerHTML = ""; return; } const passagens = veiculos.filter(v => v.vin.includes(q)); const html = passagens.length === 0 ? `<span class="search-result" style="color:var(--vermelho-suave)">&#10006; NÃO ENCONTRADO</span>` : `<span class="search-result" style="color:var(--amarelo-destaque)">&#10003; DETECTADO em ${passagens[0].alinhamento}</span>`; statusAlin.innerHTML = html; statusInd.innerHTML = html; }
+function atualizarContadores() { const vT = veiculos.filter(v => v.turno === turnoView); const totalMassivasBipadas = veiculos.filter(v => vinsMassivaLista.includes(v.vin)).length; document.getElementById("cnt-massiva").textContent = totalMassivasBipadas; document.getElementById("cnt-alin1").textContent = vT.filter(v=>v.alinhamento==="ALINHAMENTO 1").length; document.getElementById("cnt-alin2").textContent = vT.filter(v=>v.alinhamento==="ALINHAMENTO 2").length; document.getElementById("cnt-parcial").textContent = vT.length; document.getElementById("total-geral").textContent = veiculos.length; }
 let fbTimer = null;
-function mostrarFeedback(tipo, msg, sub) {
-  const el = document.getElementById("feedback");
-  el.style.display = "block";
-  el.className = "feedback "+tipo;
-  el.innerHTML = `<div class="feedback-msg">${msg}</div><div class="feedback-sub">${sub}</div>`;
-  clearTimeout(fbTimer);
-  fbTimer = setTimeout(() => {
-    el.style.display = "none"; 
-    if (!vinPendenteRetorno) document.getElementById("vin-input").focus();
-  }, 2500);
-}
+function mostrarFeedback(tipo, msg, sub) { const el = document.getElementById("feedback"); el.style.display = "block"; el.className = "feedback "+tipo; el.innerHTML = `<div class="feedback-msg">${msg}</div><div class="feedback-sub">${sub}</div>`; clearTimeout(fbTimer); fbTimer = setTimeout(() => { el.style.display = "none"; if (!vinPendenteRetorno) document.getElementById("vin-input").focus(); }, 2500); }
 
 function renderAlinhamento() {
-  const alin = subTabSelecionada;
-  const headerAlin = document.getElementById("alin-titulo");
-  if(headerAlin) headerAlin.textContent = alin+" \u2014 HORA A HORA ("+TURNOS_INFO[turnoView].label+")";
-  
-  let listaTurno = veiculos.filter(v => v.alinhamento === alin && v.turno === turnoView);
-  const mAgora = getMinutosDoDia(Date.now());
-  const faixasDoTurno = FAIXAS.filter(f => f.turno === turnoView);
-
+  const headerAlin = document.getElementById("alin-titulo"); if(headerAlin) headerAlin.textContent = subTabSelecionada+" \u2014 HORA A HORA ("+TURNOS_INFO[turnoView].label+")";
+  let listaTurno = veiculos.filter(v => v.alinhamento === subTabSelecionada && v.turno === turnoView);
+  const mAgora = getMinutosDoDia(getHoraAtualServidor()); const faixasDoTurno = FAIXAS.filter(f => f.turno === turnoView);
   const faixasWrap = document.getElementById("faixas-wrap");
   if(faixasWrap) {
     faixasWrap.innerHTML = faixasDoTurno.map(f => {
-      const veics = listaTurno.filter(v => v.faixaId === f.id);
-      const atual = (mAgora >= f.mIni && mAgora < f.mFim);
-      const vinsHtml = veics.length === 0
-        ? '<div class="vazio">\u2014</div>'
-        : veics.map((v,i) => {
-            const isMassiva = vinsMassivaLista.includes(v.vin);
-            return `<div class="vin-row">
-              <span class="vin-text ${isMassiva ? 'massiva-alert' : ''}">${isMassiva ? '🔺 ' : ''}${i+1}. ${v.vin}${v.retorno ? ' (R)' : ''}</span>
-              <span class="vin-hora">${horaFmt(v.timestamp)}</span>
-            </div>`;
-          }).join("");
-      return '<div class="faixa-card'+(atual?" atual":'')+'"><div class="faixa-header">'+f.lbl+(atual?' &#9673;':'')+'</div><div class="faixa-qtd">'+veics.length+'</div><div class="faixa-vins">'+vinsHtml+'</div></div>';
+      const veics = listaTurno.filter(v => v.faixaId === f.id); const atual = (mAgora >= f.mIni && mAgora < f.mFim);
+      const vinsHtml = veics.length === 0 ? '<div class="vazio">\u2014</div>' : veics.map((v,i) => `<div class="vin-row"><span class="vin-text ${vinsMassivaLista.includes(v.vin)?'massiva-alert':''}">${vinsMassivaLista.includes(v.vin)?'🔺 ':''}${i+1}. ${v.vin}</span></div>`).join("");
+      return '<div class="faixa-card'+(atual?" atual":'')+'"><div class="faixa-header">'+f.lbl+'</div><div class="faixa-qtd">'+veics.length+'</div><div class="faixa-vins">'+vinsHtml+'</div></div>';
     }).join("");
   }
-
   if (filtroMassivaAtivo) { listaTurno = listaTurno.filter(v => vinsMassivaLista.includes(v.vin)); }
-
-  const tbody = document.getElementById("tabela-body");
-  if(!tbody) return;
-  if (!listaTurno.length) {
-    tbody.innerHTML = `<tr><td colspan="${(currentUserRole === 'admin' || currentUserRole === 'lider') ? 7 : 6}" style="color:var(--texto-sec);text-align:center;padding:20px">${filtroMassivaAtivo ? 'Nenhum veículo massiva encontrado.' : 'Nenhum veículo lançado neste turno.'}</td></tr>`;
-  } else {
-    tbody.innerHTML = listaTurno.slice().reverse().map((v,i) => {
-      const fx = FAIXAS.find(x => x.id === v.faixaId);
-      const isMassiva = vinsMassivaLista.includes(v.vin);
-      return `<tr>
-        <td style="color:var(--texto-sec)">${listaTurno.length-i}</td>
-        <td style="color:${isMassiva ? 'var(--vermelho-suave)' : 'var(--branco)'}; letter-spacing:2px; font-weight:bold;">${isMassiva ? '🔺 ' : ''}${v.vin}</td>
-        <td style="color:var(--cinza-destaque)">${horaFmt(v.timestamp)}</td>
-        <td style="color:var(--texto-sec)">${fx ? fx.lbl : "\u2014"}</td>
-        <td style="color:var(--texto-sec)">${v.turno}º Turno</td>
-        <td style="font-size:11px;">${v.retorno ? '<span style="color:var(--amarelo-destaque)">&#9888; ' + v.motivo + '</span>' : '<span style="color:var(--verde-suave); font-weight:bold;">OK</span>'}</td>
-        ${(currentUserRole === 'admin' || currentUserRole === 'lider') ? `<td class="th-admin-only"><button class="btn-del-row" onclick="removerRegistroLive('${v.idFirebase}')">[X]</button></td>` : ''}
-      </tr>`;
-    }).join("");
-  }
+  const tbody = document.getElementById("tabela-body"); if(!tbody) return;
+  
+  if (listaTurno.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="color: var(--texto-sec); padding: 24px;">Nenhum veículo lançado neste turno</td></tr>`; return; }
+  
+  tbody.innerHTML = listaTurno.slice().reverse().map((v,i) => `<tr><td>${listaTurno.length-i}</td><td>${vinsMassivaLista.includes(v.vin)?'🔺 ':''}${v.vin}</td><td>${horaFmt(v.timestamp)}</td><td>${v.turno}º Turno</td><td>${v.turno}º Turno</td><td style="color:${v.retorno?'var(--vermelho-suave)':'var(--verde-suave)'}; font-weight:bold;">${v.retorno?v.motivo:'OK'}</td><td><button class="btn-del-row" onclick="removerRegistroLive('${v.idFirebase}')">[X]</button></td></tr>`).join("");
 }
 
 function renderIndicador() {
-  const labelTurno = document.getElementById("titulo-turno-tabela");
-  if(labelTurno) labelTurno.textContent = `INDICADOR PARCIAL — ${TURNOS_INFO[turnoView].label}`;
-  
-  const faixasTurno = FAIXAS.filter(f => f.turno === turnoView);
-  let pTotMeta = 0, pTotProd = 0;
-  
-  const lines = faixasTurno.map(f => {
-    const prod = veiculos.filter(v => v.faixaId === f.id).length;
-    const dif = prod - f.meta;
-    const pct = f.meta > 0 ? Math.round((prod / f.meta) * 100) : 0;
-    const cls = dif >= 0 ? "positivo" : "negativo"; 
-    const prf = dif > 0 ? "+" : "";
-    pTotMeta += f.meta; pTotProd += prod;
-    
-    const metaCell = (currentUserRole === 'admin' || currentUserRole === 'lider')
-      ? `<input type="number" class="input-meta-live" value="${f.meta}" onchange="atualizarMetaLive('${f.id}', this.value)">` 
-      : f.meta;
+  const lblTurnoTab = document.getElementById("titulo-turno-tabela");
+  if (lblTurnoTab) lblTurnoTab.textContent = `INDICADOR PARCIAL — ${TURNOS_INFO[turnoView].label}`;
 
-    return `<tr><td class="titulo-linha">${f.lbl}</td><td>${metaCell}</td><td style="color:var(--cinza-destaque);font-weight:bold;">${prod}</td><td class="${cls}">${prf}${dif}</td><td class="${cls}">${pct}%</td></tr>`;
+  const faixasTurno = FAIXAS.filter(f => f.turno === turnoView); let pTotMeta = 0, pTotProd = 0;
+  const lines = faixasTurno.map(f => {
+    const prod = veiculos.filter(v => v.faixaId === f.id).length; const dif = prod - f.meta; pTotMeta += f.meta; pTotProd += prod;
+    const metaCell = (currentUserRole === 'admin' || currentUserRole === 'lider') ? `<input type="number" class="input-meta-live" value="${f.meta}" onchange="atualizarMetaLive('${f.id}', this.value)">` : f.meta;
+    const corDifClass = dif >= 0 ? 'positivo' : 'negativo';
+    const txtDif = dif >= 0 ? '+' + dif : dif;
+    return `<tr><td>${f.lbl}</td><td>${metaCell}</td><td>${prod}</td><td class="${corDifClass}">${txtDif}</td><td class="${corDifClass}">${f.meta>0?Math.round((prod/f.meta)*100):0}%</td></tr>`;
+  }).join("");
+  
+  const difTot = pTotProd - pTotMeta;
+  const corTotClass = difTot >= 0 ? 'positivo' : 'negativo';
+  const txtDifTot = difTot >= 0 ? '+' + difTot : difTot;
+  const boxParcial = document.getElementById("ind-parcial-tabelas"); if(boxParcial) boxParcial.innerHTML = `<table class="tabela-nativa"><thead><tr><th>W/P</th><th>META</th><th>PROD</th><th>DIF</th><th>%</th></tr></thead><tbody>${lines}</tbody><tfoot><tr><td>TTL</td><td>${pTotMeta}</td><td>${pTotProd}</td><td class="${corTotClass}">${txtDifTot}</td><td class="${corTotClass}">${pTotMeta>0?Math.round((pTotProd/pTotMeta)*100):0}%</td></tr></tfoot></table>`;
+  
+  let contagemModelos = { "T-19": 0, "T-1E": 0, "T-18": 0, "UNI-T": 0, "CS75": 0, "Outros": 0 };
+  veiculos.forEach(v => { if(v.vin && v.vin.length >= 4) { const p4 = v.vin.substring(0,4); let c = false; for (const [m, px] of Object.entries(PREFIXOS_MODELOS)) { if (px.some(x => p4.startsWith(x))) { contagemModelos[m]++; c = true; break; } } if(!c) contagemModelos["Outros"]++; } });
+  const boxModelos = document.getElementById("ind-modelos-wrap"); if(boxModelos) boxModelos.innerHTML = `<table class="tabela-nativa"><tbody><tr><td>T-19: ${contagemModelos["T-19"]}</td><td>T-1E: ${contagemModelos["T-1E"]}</td><td>T-18: ${contagemModelos["T-18"]}</td><td>UNI-T: ${contagemModelos["UNI-T"]}</td><td>CS75: ${contagemModelos["CS75"]}</td></tr></tbody></table>`;
+
+  let resumoGeralDados = { 1: { meta: 0, prod: 0 }, 2: { meta: 0, prod: 0 }, 3: { meta: 0, prod: 0 } };
+  FAIXAS.forEach(f => { resumoGeralDados[f.turno].meta += f.meta; });
+  veiculos.forEach(v => { if(resumoGeralDados[v.turno]) resumoGeralDados[v.turno].prod++; });
+
+  let totalMetasGerais = 0, totalProdGerais = 0;
+  const linhasGeraisHtml = [1, 2, 3].map(tNum => {
+    const dataTurno = resumoGeralDados[tNum]; const difGeral = dataTurno.prod - dataTurno.meta;
+    totalMetasGerais += dataTurno.meta; totalProdGerais += dataTurno.prod;
+    return `<tr><td class="titulo-linha" style="padding-left:24px; font-weight:bold;">${TURNOS_INFO[tNum].label}</td><td>${dataTurno.meta}</td><td>${dataTurno.prod}</td><td class="${difGeral >= 0 ? 'positivo' : 'negativo'}">${difGeral >= 0 ? '+' + difGeral : difGeral}</td><td class="${difGeral >= 0 ? 'positivo' : 'negativo'}">${dataTurno.meta > 0 ? Math.round((dataTurno.prod / dataTurno.meta) * 100) : 0}%</td></tr>`;
   }).join("");
 
-  const dTotP = pTotProd - pTotMeta;
-  const pTotPct = pTotMeta > 0 ? Math.round((pTotProd / pTotMeta) * 100) : 0;
-  const cTotP = dTotP >= 0 ? "positivo" : "negativo";
-  const prfTotP = dTotP > 0 ? "+" : "";
-
-  const boxParcial = document.getElementById("ind-parcial-tabelas");
-  if(boxParcial) boxParcial.innerHTML = `<table class="tabela-nativa"><thead><tr><th>W/P</th><th>META</th><th>PRODUZIDO</th><th>DIFERENÇA</th><th>%</th></tr></thead><tbody>${lines}</tbody><tfoot><tr><td>TTL</td><td>${pTotMeta}</td><td>${pTotProd}</td><td class="${cTotP}">${prfTotP}${dTotP}</td><td class="${cTotP}">${pTotPct}%</td></tr></tfoot></table>`;
-
-  // MODELOS
-  let contagemModelos = { "T-19": 0, "T-1E": 0, "T-18": 0, "UNI-T": 0, "CS75": 0, "Outros": 0 };
-  veiculos.forEach(v => {
-    if(v.vin && v.vin.length >= 4) {
-      const prefixo4 = v.vin.substring(0, 4);
-      let classificado = false;
-      for (const [modelo, prefixos] of Object.entries(PREFIXOS_MODELOS)) {
-        if (prefixos.some(p => prefixo4.startsWith(p))) { contagemModelos[modelo]++; classificado = true; break; }
-      }
-      if (!classificado) contagemModelos["Outros"]++;
-    }
-  });
-
-  const boxModelos = document.getElementById("ind-modelos-wrap");
-  if(boxModelos) {
-    boxModelos.innerHTML = `
-      <table class="tabela-nativa" style="margin-bottom:24px;">
-        <thead><tr><th>MODELO DE VEÍCULO</th><th>TOTAL DE VEÍCULOS</th></tr></thead>
-        <tbody>
-          <tr><td class="titulo-linha">T-19</td><td style="font-weight:bold; color:var(--branco);">${contagemModelos["T-19"]}</td></tr>
-          <tr><td class="titulo-linha">T-1E</td><td style="font-weight:bold; color:var(--branco);">${contagemModelos["T-1E"]}</td></tr>
-          <tr><td class="titulo-linha">T-18</td><td style="font-weight:bold; color:var(--branco);">${contagemModelos["T-18"]}</td></tr>
-          <tr><td class="titulo-linha">UNI-T</td><td style="font-weight:bold; color:var(--branco);">${contagemModelos["UNI-T"]}</td></tr>
-          <tr><td class="titulo-linha">CS75</td><td style="font-weight:bold; color:var(--branco);">${contagemModelos["CS75"]}</td></tr>
-          <tr style="opacity:0.4;"><td class="titulo-linha">Não Identificados</td><td>${contagemModelos["Outros"]}</td></tr>
-        </tbody>
-      </table>`;
-  }
-
-  // RESUMO GERAL
-  let generalLines = ""; let gTotMeta = 0; let gTotProd = 0;
-  [1, 2, 3].forEach(tNum => {
-    let tMeta = 0; let tProd = 0;
-    FAIXAS.filter(f => f.turno === tNum).forEach(f => { tMeta += f.meta; tProd += veiculos.filter(v => v.faixaId === f.id).length; });
-    gTotMeta += tMeta; gTotProd += tProd;
-    const dif = tProd - tMeta; const pct = tMeta > 0 ? Math.round((tProd / tMeta) * 100) : 0;
-    const cls = dif >= 0 ? "positivo" : "negativo"; const prf = dif > 0 ? "+" : "";
-    generalLines += `<tr><td class="titulo-linha">${tNum}º TURNO</td><td>${tMeta}</td><td style="color:var(--cinza-destaque);font-weight:bold;">${tProd}</td><td class="${cls}">${prf}${dif}</td><td class="${cls}">${pct}%</td></tr>`;
-  });
-
-  const gDif = gTotProd - gTotMeta; const gPct = gTotMeta > 0 ? Math.round((gTotProd / gTotMeta) * 100) : 0;
-  const gCls = gDif >= 0 ? "positivo" : "negativo"; const gPrf = gDif > 0 ? "+" : "";
   const boxGeral = document.getElementById("ind-geral-wrap");
-  if(boxGeral) boxGeral.innerHTML = `<table class="tabela-nativa"><thead><tr><th>TURNO</th><th>META</th><th>PRODUZIDO</th><th>DIFERENÇA</th><th>%</th></tr></thead><tbody>${generalLines}</tbody><tfoot><tr><td>TOTAL GERAL</td><td>${gTotMeta}</td><td>${gTotProd}</td><td class="${gCls}">${gPrf}${gDif}</td><td class="${gCls}">${gPct}%</td></tr></tfoot></table>`;
-}
-
-function abrirModal() { if (currentUserRole === "admin" || currentUserRole === "lider") document.getElementById("modal-overlay").classList.add("show"); }
-function fecharModal() { document.getElementById("modal-overlay").classList.remove("show"); }
-
-function confirmarNovoDia() {
-  if (currentUserRole !== "admin" && currentUserRole !== "lider") return;
-  db.ref("producao/veiculos").remove().then(() => { fecharModal(); abrirAba("lancamento"); });
-}
-
-window.onload = () => { 
-  atualizarRelogio();
-  inicializarUsuariosSistema();
-  
-  turnoView = parseInt(localStorage.getItem("ali_turno")||"1");
-  document.getElementById("turno-info-label").textContent = TURNOS_INFO[turnoView].range;
-  
-  checarSessaoAtiva();
-  if(document.getElementById("login-overlay").style.display !== "none") {
-    document.getElementById("login-user-select").focus();
+  if (boxGeral) {
+    boxGeral.innerHTML = `<table class="tabela-nativa"><thead><tr><th style="text-align:left; padding-left:24px;">TURNO</th><th>META TOTAL</th><th>PRODUZIDO</th><th>DIFERENÇA</th><th>EFICIÊNCIA</th></tr></thead><tbody>${linhasGeraisHtml}</tbody><tfoot><tr><td style="text-align:left; padding-left:24px;">TOTAL ACUMULADO</td><td>${totalMetasGerais}</td><td>${totalProdGerais}</td><td class="${(totalProdGerais - totalMetasGerais) >= 0 ? 'positivo' : 'negativo'}">${(totalProdGerais - totalMetasGerais) >= 0 ? '+' + (totalProdGerais - totalMetasGerais) : (totalProdGerais - totalMetasGerais)}</td><td class="${(totalProdGerais - totalMetasGerais) >= 0 ? 'positivo' : 'negativo'}">${totalMetasGerais > 0 ? Math.round((totalProdGerais / totalMetasGerais) * 100) : 0}%</td></tr></tfoot></table>`;
   }
-};
+}
+function abrirModal() { document.getElementById("modal-overlay").classList.add("show"); }
+function fecharModal() { document.getElementById("modal-overlay").classList.remove("show"); }
+function confirmarNovoDia() { db.ref("producao/veiculos").remove().then(() => { fecharModal(); abrirAba("lancamento"); }); }
+window.onload = () => { atualizarRelogio(); inicializarUsuariosSistema(); turnoView = parseInt(localStorage.getItem("ali_turno")||"1"); checarSessaoAtiva(); };
 </script>
 </body>
 </html>
