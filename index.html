@@ -221,8 +221,9 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
       <p>Tempo total da parada: <strong id="parada-tempo-display" style="color:var(--vermelho-suave); font-size:18px;"></strong></p>
       <select class="user-select" id="parada-motivo" onkeydown="if(event.key==='Enter') salvarParada()">
         <option value="Manutenção de Equipamento">Manutenção de Equipamento</option>
-        <option value="Falta de Peça/Insumo">Falta de Peça/Insumo</option>
+        <option value="Fluxo Baixo">Fluxo Baixo</option>
         <option value="Reunião / Treinamento">Reunião / Treinamento</option>
+        <option value="Testes Engenharia">Testes Engenharia</option>
         <option value="Outro Motivo">Outro Motivo</option>
       </select>
       <input type="text" class="login-input" id="parada-obs" placeholder="Observações (Opcional)" onkeydown="if(event.key==='Enter') salvarParada()">
