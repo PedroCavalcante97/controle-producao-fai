@@ -71,15 +71,18 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
 .turno-ativo-badge { font-size: 12px; color: var(--amarelo-destaque); letter-spacing: 3px; border: 1px solid var(--amarelo-destaque); background: rgba(255, 204, 0, 0.05); padding: 8px 20px; border-radius: 20px; font-weight: bold; box-shadow: 0 0 10px rgba(255, 204, 0, 0.1); }
 .alin-btns { display: flex; gap: 12px; }
 .alin-btn { padding: 12px 32px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg-panel); color: var(--texto-sec); font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .2s; letter-spacing: 1px; }
+
+/* Adições UI de Cores */
 .btn-azul.active { border-color: var(--azul-ativo) !important; color: var(--azul-ativo) !important; background: rgba(52, 152, 219, 0.1) !important; }
 .btn-roxo.active { border-color: var(--roxo-ativo) !important; color: var(--roxo-ativo) !important; background: rgba(155, 89, 182, 0.1) !important; }
-.form-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 500px; }
-.form-label { font-size: 12px; color: var(--texto-sec); letter-spacing: 3px; text-transform: uppercase; }
-#vin-input { width: 100%; padding: 20px 24px; border-radius: 12px; border: 2px solid var(--border); background: var(--bg-page); color: var(--branco); font-family: 'DM Mono', monospace; font-size: 24px; letter-spacing: 4px; text-align: center; outline: none; transition: border-color .2s; }
 .input-azul { border-color: var(--azul-ativo) !important; box-shadow: 0 0 15px rgba(52, 152, 219, 0.15) !important; }
 .input-roxo { border-color: var(--roxo-ativo) !important; box-shadow: 0 0 15px rgba(155, 89, 182, 0.15) !important; }
 
-/* Animações e Estilos Dinâmicos do Botão Lançar */
+.form-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 500px; }
+.form-label { font-size: 12px; color: var(--texto-sec); letter-spacing: 3px; text-transform: uppercase; }
+#vin-input { width: 100%; padding: 20px 24px; border-radius: 12px; border: 2px solid var(--border); background: var(--bg-page); color: var(--branco); font-family: 'DM Mono', monospace; font-size: 24px; letter-spacing: 4px; text-align: center; outline: none; transition: border-color .2s; }
+
+/* Botão Lançar e sua Animação */
 .btn-lancar { width: 100%; padding: 16px; border-radius: 10px; border: none; font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 900; letter-spacing: 2px; cursor: pointer; transition: all 0.3s ease; }
 .btn-lancar-azul { background: var(--bg-panel); color: var(--branco); border: 2px solid var(--border); }
 .btn-lancar-azul:hover { background: var(--azul-ativo); border-color: var(--azul-ativo); box-shadow: 0 0 15px rgba(52, 152, 219, 0.4); color: #fff; }
@@ -430,11 +433,10 @@ function abrirAbaComVerificacao(id) {
   abrirAba(id);
 }
 
-// ---- LÓGICA DE FUSO HORÁRIO TRAVADO ----
+/* --- LÓGICA DE FUSO HORÁRIO TRAVADO EM BRASÍLIA --- */
 function getHoraAtualServidor() { return Date.now() + serverTimeOffset; }
 function getDataHoraBrasil(ts) {
   const dt = new Date(ts);
-  // Pega o tempo UTC real e subtrai 3 horas, garantindo sempre o fuso de Brasília (Anápolis) independentemente de onde o celular do operador esteja configurado
   const utc = dt.getTime() + (dt.getTimezoneOffset() * 60000);
   return new Date(utc - (3600000 * 3));
 }
@@ -456,7 +458,6 @@ function atualizarRelogio() {
   }
 }
 setInterval(atualizarRelogio, 1000);
-// ------------------------------------------
 
 function sincronizarMetasGlobais() { db.ref("config/metas").on("value", (snapshot) => { const metasLidas = snapshot.val(); if (metasLidas) { FAIXAS.forEach(f => { if (metasLidas[f.id] !== undefined) f.meta = metasLidas[f.id]; }); renderIndicador(); } }); }
 function atualizarMetaLive(faixaId, novaMeta) { if (!verificarPermissao()) { abrirModalBloqueio("Nível de acesso insuficiente."); renderIndicador(); return; } db.ref(`config/metas/${faixaId}`).set(parseInt(novaMeta) || 0); }
@@ -469,6 +470,7 @@ function checarSessaoAtiva() { const sessaoUser = localStorage.getItem("ali_sess
 function executarLogout() { localStorage.removeItem("ali_sessao_user"); localStorage.removeItem("ali_sessao_role"); document.getElementById("app-container").style.display = "none"; document.getElementById("login-overlay").style.display = "flex"; document.getElementById("login-pass").value = ""; document.getElementById("login-erro").style.display = "none"; }
 function executarLogin() { const u = document.getElementById("login-user-select").value; const p = document.getElementById("login-pass").value; const contaEncontrada = listaUsuariosCadastrados.find(x => x.user === u && x.pass === p); if (contaEncontrada) { currentUserRole = contaEncontrada.role; localStorage.setItem("ali_sessao_user", contaEncontrada.user.toUpperCase()); localStorage.setItem("ali_sessao_role", contaEncontrada.role); liberarAcessoApp(contaEncontrada.user.toUpperCase()); } else { document.getElementById("login-erro").style.display = "block"; } }
 
+/* --- ATUALIZAÇÃO ESTRUTURAL: MIGRAÇÃO PARA CHILD_ADDED --- */
 let renderTimer = null;
 function atualizarPainelLote() {
   clearTimeout(renderTimer);
@@ -480,6 +482,7 @@ function conectarSincronizacaoFirebase() {
   db.ref(".info/serverTimeOffset").on("value", snap => { serverTimeOffset = snap.val() || 0; });
   sincronizarMetasGlobais(); 
   sincronizarListaMassivaGlobal();
+  
   const ref = db.ref("producao/veiculos");
   ref.on("child_added", (snapshot) => { veiculos.push({ idFirebase: snapshot.key, ...snapshot.val() }); atualizarPainelLote(); });
   ref.on("child_removed", (snapshot) => { veiculos = veiculos.filter(v => v.idFirebase !== snapshot.key); atualizarPainelLote(); });
@@ -496,7 +499,7 @@ function identificarFaixa(ts) { const m = getMinutosDoDia(ts); return FAIXAS.fin
 function selecionarTurno(n) { turnoView = n; localStorage.setItem("ali_turno", turnoView); [1,2,3].forEach(i => { document.getElementById("t-btn-"+i).className = "turno-btn"+(i===n?" active":""); }); document.getElementById("turno-info-label").textContent = TURNOS_INFO[n].range; atualizarContadores(); renderAlinhamento(); renderIndicador(); }
 function abrirAba(id) { document.querySelectorAll(".aba").forEach(a => a.classList.remove("active")); document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active")); document.getElementById("aba-"+id).classList.add("active"); const idx = ["lancamento","alinhamento","indicador","massiva","usuarios"].indexOf(id); if(idx !== -1) document.querySelectorAll(".nav-btn")[idx].classList.add("active"); if (id==="alinhamento") renderAlinhamento(); if (id==="indicador") renderIndicador(); if (id==="lancamento") setTimeout(()=>document.getElementById("vin-input").focus(),100); }
 
-// A Função que filtra os dados na aba de alinhamento
+// Restaurada: Sub Tabs na aba de Alinhamento
 function selecionarSubTab(alin) {
   subTabSelecionada = alin;
   document.getElementById("subtab-1").className = "sub-tab" + (alin === "ALINHAMENTO 1" ? " active" : "");
