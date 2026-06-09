@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Rastreio e Liberação</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+<style>
+:root {
+  --bg-page: #111111;
+  --bg-panel: #1c1c1c;
+  --border: #2f2f2f;
+  --cinza-destaque: #cccccc;
+  --branco: #ffffff;
+  --texto-sec: #7a7a7a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg-page);
+  color: var(--branco);
+  font-family: 'DM Mono', monospace;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* REORGANIZAÇÃO: Container mais largo para evitar espremer itens */
+.container { width: 100%; max-width: 1400px; }
+
+.dash { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px; padding: 12px; flex: 1; text-align: center; min-width: 100px; }
+.card-title { font-size: 10px; color: var(--texto-sec); letter-spacing: 2px; }
+.card-val { font-size: 24px; font-weight: 700; margin-top: 4px; }
+.card.branco .card-val { color: var(--branco); }
+.card.cinza .card-val { color: var(--cinza-destaque); }
+.card.preto .card-val { color: var(--texto-sec); }
+.card.total .card-val { color: #f1c40f; }
+
+.layout-reparo { display: flex; align-items: flex-start; gap: 16px; }
+.reparo-main { flex: 1; min-width: 0; }
+.reparo-sidebar { width: 220px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+
+.sidebar-title { font-size: 10px; color: var(--texto-sec); letter-spacing: 2px; margin-top: 8px; margin-bottom: 4px; font-weight: bold; }
+.st-card-simple { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; }
+.st-card-simple .st-name { font-size: 10px; color: var(--cinza-destaque); font-weight: bold; }
+.st-card-simple .st-count { font-size: 14px; font-weight: 700; color: var(--branco); }
+
+.tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.tab-btn { flex: 1; padding: 12px; background: var(--bg-panel); color: var(--texto-sec); border: 1px solid var(--border); border-radius: 6px; font-family: 'DM Mono', monospace; font-weight: bold; font-size: 12px; cursor: pointer; letter-spacing: 1px; transition: all 0.2s; }
+.tab-btn.active { background: var(--cinza-destaque); color: #000; border-color: var(--cinza-destaque); }
+.tab-btn:hover:not(.active) { background: #2a2a2a; color: var(--branco); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.form-panel { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+.form-panel input, .form-panel select { background: var(--bg-page); border: 1px solid var(--border); color: var(--branco); font-family: 'DM Mono', monospace; font-size: 11px; padding: 10px; border-radius: 4px; outline: none; flex: 1; min-width: 120px; text-transform: uppercase; }
+.form-panel input:focus, .form-panel select:focus { border-color: var(--cinza-destaque); }
+.btn-add { background: var(--cinza-destaque); color: #000; border: none; font-family: 'DM Mono', monospace; font-weight: bold; font-size: 11px; padding: 10px 16px; border-radius: 4px; cursor: pointer; }
+
+/* REORGANIZAÇÃO: Colunas quebram linha se não houver espaço (Fim da rolagem) */
+.colunas-wrap { display: flex; gap: 12px; width: 100%; align-items: flex-start; flex-wrap: wrap; }
+.col-cor { flex: 1; min-width: 320px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px; padding: 8px; }
+.col-cor-title { font-size: 11px; text-align: center; color: var(--texto-sec); letter-spacing: 2px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); font-weight: bold; }
+
+/* LAYOUT DAS LINHAS - Travado em linha única (nowrap) sem barra de rolagem (overflow hidden) */
+.car-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 2px; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 4px; flex-wrap: nowrap; overflow: hidden; }
+.car-row:last-child { border-bottom: none; }
+
+.car-info { flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.car-vin { font-size: 10px; font-weight: bold; color: var(--cinza-destaque); display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.car-vin.vin-red { color: #d32f2f; }
+
+.station-col { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.car-time { font-size: 8px; text-align: center; line-height: 1; font-weight: normal; transition: color 1s ease; white-space: nowrap; }
+
+/* ESTILOS DOS INDICADORES - CORES FORTES E OPACAS, SEM NEON */
+.car-indicators { flex: 0 0 auto; display: flex; gap: 3px; align-items: center; justify-content: center; }
+.indicator-btn { font-family: 'DM Mono', monospace; font-size: 7px; font-weight: bold; padding: 3px 4px; border-radius: 3px; cursor: pointer; text-transform: uppercase; outline: none; transition: all 0.2s ease; background: transparent; border: 1px solid #333; color: #555; box-shadow: none; text-shadow: none; }
+.indicator-btn:hover { border-color: #555; color: #777; }
+
+/* QA CP9 (Vermelho Escuro Forte, Sem Brilho) */
+.indicator-btn.qa-cp9.active { border-color: #d32f2f; color: #d32f2f; }
+
+/* PDI (Cinza Chumbo Forte, Sem Brilho) */
+.indicator-btn.pdi.active { border-color: #90a4ae; color: #90a4ae; }
+
+/* Cores específicas para os contadores na sidebar */
+.text-strong-red { color: #d32f2f !important; text-shadow: none; font-weight: bold; }
+.text-strong-silver { color: #90a4ae !important; text-shadow: none; font-weight: bold; }
+.no-glow { color: var(--texto-sec) !important; text-shadow: none; }
+
+.car-actions { flex: 0 0 auto; display: flex; gap: 3px; align-items: center; }
+
+.badge-select { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: bold; padding: 3px; border-radius: 4px; border: none; cursor: pointer; outline: none; text-transform: uppercase; color: #000; appearance: none; text-align: center; width: 75px; white-space: nowrap; }
+.badge-select option { background: var(--bg-panel); color: var(--branco); }
+.badge-texto { display: inline-block; font-size: 8px; font-weight: bold; padding: 3px; border-radius: 4px; color: #000; text-transform: uppercase; text-align: center; width: 75px; white-space: nowrap; }
+
+/* CORES DAS ESTAÇÕES */
+.st-exok { background-color: #bdc3c7; color: #000 !important; }
+.st-alinhamento { background-color: #f1c40f; color: #000 !important; }
+.st-pista { background-color: #ff7675; color: #000 !important; }
+.st-funilaria { background-color: #2c3e50; color: #fff !important; }
+.st-eletrico { background-color: #9b59b6; color: #fff !important; }
+.st-shower { background-color: #74b9ff; color: #000 !important; }
+.st-signoff { background-color: #55efc4; color: #000 !important; }
+.st-pintura { background-color: #e67e22; color: #000 !important; }
+.st-tunel { background-color: #a8e6cf; color: #000 !important; }
+.st-bolsao { background-color: #ffeaa7; color: #000 !important; }
+
+/* ANIMAÇÃO ALERTA PISCANTE */
+@keyframes blink-alert {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.blink-icon {
+  animation: blink-alert 1s infinite;
+  margin-right: 4px;
+}
+
+.btn-action { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: bold; padding: 3px 5px; border-radius: 4px; border: none; cursor: pointer; white-space: nowrap; }
+.btn-liberar { background: rgba(39, 174, 96, 0.1); color: #2ecc71; border: 1px solid #2ecc71; }
+.btn-liberar:hover { background: #2ecc71; color: #000; }
+.btn-del { background: transparent; color: #e74c3c; border: 1px solid #e74c3c; }
+.btn-del:hover { background: #e74c3c; color: #fff; }
+.btn-desfazer { background: rgba(230, 126, 34, 0.1); color: #e67e22; border: 1px solid #e67e22; }
+.btn-desfazer:hover { background: #e67e22; color: #000; }
+
+@media print {
+  body { background: #fff; color: #000; padding: 0; }
+  .no-print, .tabs { display: none !important; }
+  .card, .col-cor, .st-card-simple { background: #fff; border: 1px solid #000; }
+  .col-cor-title, .car-row { border-color: #ccc; }
+  .car-vin { color: #000; }
+  .badge-select, .badge-texto { border: 1px solid #000; }
+  .tab-content { display: block !important; margin-bottom: 20px; }
+  .tab-content::before { content: attr(data-title); font-weight: bold; display: block; margin-bottom: 10px; font-size: 14px; text-align: center; }
+  .layout-reparo { display: block; }
+  .reparo-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; margin-top: 16px; }
+  .sidebar-title { width: 100%; text-align: center; }
+  .st-card-simple { flex: 1; min-width: 100px; margin: 4px; }
+}
+
+@media (max-width: 1200px) {
+  .layout-reparo { flex-direction: column; }
+  .reparo-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; margin-bottom: 16px; }
+  .st-card-simple { flex: 1; min-width: 120px; }
+  .sidebar-title { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="tabs no-print">
+    <button class="tab-btn active" onclick="mudarAba('reparo')" id="btn-reparo">EM REPARO (0)</button>
+    <button class="tab-btn" onclick="mudarAba('liberados')" id="btn-liberados">LIBERADOS (0)</button>
+  </div>
+
+  <div id="tab-reparo" class="tab-content active" data-title="VEÍCULOS EM REPARO">
+    <div class="layout-reparo">
+      <div class="reparo-main">
+        
+        <form class="form-panel no-print" id="form">
+          <input type="text" id="vin" placeholder="DIGITE O VIN" required autocomplete="off">
+          <select id="estacao" required>
+            <option value="">ESTAÇÃO...</option>
+            <option value="ALINHAMENTO">ALINHAMENTO</option>
+            <option value="REP. PISTA">REP. PISTA</option>
+            <option value="ELEVACAR">ELEVACAR</option>
+            <option value="REP. ELÉTRICO">REP. ELÉTRICO</option>
+            <option value="REP. SHOWER">REP. SHOWER</option>
+            <option value="SIGN OFF">SIGN OFF</option>
+            <option value="EX OK">EX OK</option>
+            <option value="REP. PINTURA">REP. PINTURA</option>
+            <option value="TÚNEL DE POLIMENTO">TÚNEL DE POLIMENTO</option>
+            <option value="REP. FUNILARIA">REP. FUNILARIA</option>
+            <option value="TÚNEL DE LIBERAÇÃO">TÚNEL DE LIBERAÇÃO</option>
+            <option value="BOLSÃO REFEITÓRIO">BOLSÃO REFEITÓRIO</option>
+            <option value="BOLSÃO HELIPONTO">BOLSÃO HELIPONTO</option>
+            <option value="BOLSÃO PISTA">BOLSÃO PISTA</option>
+          </select>
+          <select id="cor" required>
+            <option value="">COR...</option>
+            <option value="Branco">BRANCO</option>
+            <option value="Cinza">CINZA</option>
+            <option value="Preto">PRETO</option>
+          </select>
+          <button type="submit" class="btn-add">ADICIONAR</button>
+        </form>
+
+        <div class="form-panel no-print" style="margin-bottom: 16px; align-items: center; justify-content: space-between; font-size: 11px;">
+          <div style="font-weight: bold; color: var(--texto-sec); letter-spacing: 1px;">AJUSTAR METAS ALVO:</div>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <label style="color: var(--branco);">BRANCO: <input type="number" id="target-branco" style="width: 50px; flex: none; padding: 4px; text-align: center; margin-left: 4px;" value="7"></label>
+            <label style="color: var(--cinza-destaque);">CINZA: <input type="number" id="target-cinza" style="width: 50px; flex: none; padding: 4px; text-align: center; margin-left: 4px;" value="7"></label>
+            <label style="color: var(--texto-sec);">PRETO: <input type="number" id="target-preto" style="width: 50px; flex: none; padding: 4px; text-align: center; margin-left: 4px;" value="7"></label>
+            <label style="color: #f1c40f;">GERAL: <input type="number" id="target-total" style="width: 50px; flex: none; padding: 4px; text-align: center; margin-left: 4px;" value="21"></label>
+          </div>
+          <button type="button" class="btn-add" onclick="salvarMetasAlvo()" style="padding: 6px 12px; font-size: 10px;">SALVAR METAS</button>
+        </div>
+
+        <div class="colunas-wrap">
+          <div class="col-cor">
+            <div class="col-cor-title">BRANCO</div>
+            <div id="lista-reparo-branco"></div>
+          </div>
+          <div class="col-cor">
+            <div class="col-cor-title">CINZA</div>
+            <div id="lista-reparo-cinza"></div>
+          </div>
+          <div class="col-cor">
+            <div class="col-cor-title">PRETO</div>
+            <div id="lista-reparo-preto"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="reparo-sidebar" id="dash-estacoes">
+        </div>
+    </div>
+
+  </div>
+
+  <div id="tab-liberados" class="tab-content" data-title="VEÍCULOS LIBERADOS">
+    <div class="dash">
+      <div class="card branco">
+        <div class="card-title">BRANCO</div>
+        <div class="card-val" id="ct-branco">0/7</div>
+      </div>
+      <div class="card cinza">
+        <div class="card-title">CINZA</div>
+        <div class="card-val" id="ct-cinza">0/7</div>
+      </div>
+      <div class="card preto">
+        <div class="card-title">PRETO</div>
+        <div class="card-val" id="ct-preto">0/7</div>
+      </div>
+      <div class="card total">
+        <div class="card-title">META GERAL</div>
+        <div class="card-val" id="ct-total">0/21</div>
+      </div>
+    </div>
+
+    <div class="colunas-wrap">
+      <div class="col-cor">
+        <div class="col-cor-title">BRANCO</div>
+        <div id="lista-lib-branco"></div>
+      </div>
+      <div class="col-cor">
+        <div class="col-cor-title">CINZA</div>
+        <div id="lista-lib-cinza"></div>
+      </div>
+      <div class="col-cor">
+        <div class="col-cor-title">PRETO</div>
+        <div id="lista-lib-preto"></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // CONFIGURAÇÃO DO FIREBASE
+  const firebaseConfig = { databaseURL: "https://controle-producao-79f64-default-rtdb.firebaseio.com/" };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  let veiculos = [];
+  let liberados = [];
+  let metas = { Branco: 0, Cinza: 0, Preto: 0 };
+  let metasAlvo = { Branco: 7, Cinza: 7, Preto: 7, Total: 21 };
+  let isSyncing = false;
+
+  // Escuta as alterações na pasta isolada "rastreio_temp"
+  db.ref("rastreio_temp").on("value", snapshot => {
+    isSyncing = true;
+    const data = snapshot.val() || {};
+    veiculos = data.veiculos || [];
+    liberados = data.liberados || [];
+    metas = data.metas || { Branco: 0, Cinza: 0, Preto: 0 };
+    metasAlvo = data.metasAlvo || { Branco: 7, Cinza: 7, Preto: 7, Total: 21 };
+    
+    // Atualiza os inputs do painel se o operador não estiver digitando neles agora
+    if (document.activeElement?.id !== 'target-branco') document.getElementById('target-branco').value = metasAlvo.Branco;
+    if (document.activeElement?.id !== 'target-cinza') document.getElementById('target-cinza').value = metasAlvo.Cinza;
+    if (document.activeElement?.id !== 'target-preto') document.getElementById('target-preto').value = metasAlvo.Preto;
+    if (document.activeElement?.id !== 'target-total') document.getElementById('target-total').value = metasAlvo.Total;
+
+    renderizar();
+    isSyncing = false;
+  });
+
+  // Função para salvar qualquer alteração de volta no Firebase
+  function salvarNoFirebase() {
+    if (!isSyncing) {
+      db.ref("rastreio_temp").set({
+        veiculos: veiculos,
+        liberados: liberados,
+        metas: metas,
+        metasAlvo: metasAlvo
+      });
+    }
+  }
+
+  // Grava as novas configurações de metas digitadas no painel
+  window.salvarMetasAlvo = function() {
+    metasAlvo.Branco = parseInt(document.getElementById('target-branco').value) || 0;
+    metasAlvo.Cinza = parseInt(document.getElementById('target-cinza').value) || 0;
+    metasAlvo.Preto = parseInt(document.getElementById('target-preto').value) || 0;
+    metasAlvo.Total = parseInt(document.getElementById('target-total').value) || 0;
+    salvarNoFirebase();
+  };
+
+  // Liga e desliga os sinalizadores (QA CP9 e PDI)
+  window.toggleIndicator = function(idx, arrayName, field) {
+    if (arrayName === 'veiculos') {
+      veiculos[idx][field] = !veiculos[idx][field];
+    } else if (arrayName === 'liberados') {
+      liberados[idx][field] = !liberados[idx][field];
+    }
+    salvarNoFirebase();
+  };
+
+  // Helper de Horário (Apenas Texto)
+  function formatTime(ts) {
+    if (!ts) return "--:--";
+    return new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  // Helper Dinâmico de Cor (Tons mais fechados e industriais)
+  function getColorByTime(ts) {
+    if (!ts) return "var(--texto-sec)";
+    const diff = Date.now() - ts;
+    const maxDiff = 3 * 60 * 60 * 1000; // 3 Horas em milissegundos
+    
+    let ratio = diff / maxDiff;
+    if (ratio > 1) ratio = 1; 
+    if (ratio < 0) ratio = 0;
+    
+    // Verde (120) até Vermelho (0) com saturação (60%) e luminosidade controlada (45%)
+    const hue = Math.floor(120 * (1 - ratio));
+    return `hsl(${hue}, 60%, 45%)`; 
+  }
+
+  // Lista de todas as opções de dropdown
+  const estacoesDisponiveis = [
+    "ALINHAMENTO", "REP. PISTA", "ELEVACAR", "REP. ELÉTRICO", 
+    "REP. SHOWER", "SIGN OFF", "EX OK", "REP. PINTURA", "TÚNEL DE POLIMENTO",
+    "REP. FUNILARIA", "TÚNEL DE LIBERAÇÃO", "BOLSÃO REFEITÓRIO", "BOLSÃO HELIPONTO", "BOLSÃO PISTA"
+  ];
+
+  // Grupos para a contagem da sidebar (Painel Lateral)
+  const gruposContagem = [
+    "ALINHAMENTO", "REP. PISTA", "REP. ELÉTRICO", "REP. SHOWER", "SIGN OFF", 
+    "EX OK", "REP. PINTURA", "REP. FUNILARIA", "TÚNEL DE LIBERAÇÃO", "BOLSÃO"
+  ];
+
+  function getEstacaoClass(estacao) {
+    if (estacao.includes("BOLSÃO")) return "st-bolsao";
+    
+    switch(estacao) {
+      case "ALINHAMENTO": return "st-alinhamento";
+      case "REP. PISTA": 
+      case "ELEVACAR": return "st-pista";
+      case "REP. ELÉTRICO": return "st-eletrico";
+      case "REP. SHOWER": return "st-shower";
+      case "SIGN OFF": return "st-signoff";
+      case "EX OK": return "st-exok";
+      case "REP. PINTURA": 
+      case "TÚNEL DE POLIMENTO": return "st-pintura";
+      case "REP. FUNILARIA": return "st-funilaria";
+      case "TÚNEL DE LIBERAÇÃO": return "st-tunel";
+      default: return "";
+    }
+  }
+
+  function mudarAba(aba) {
+    document.getElementById('tab-reparo').classList.remove('active');
+    document.getElementById('tab-liberados').classList.remove('active');
+    document.getElementById('btn-reparo').classList.remove('active');
+    document.getElementById('btn-liberados').classList.remove('active');
+    
+    document.getElementById(`tab-${aba}`).classList.add('active');
+    document.getElementById(`btn-${aba}`).classList.add('active');
+  }
+
+  function renderizar() {
+    document.getElementById('lista-reparo-branco').innerHTML = '';
+    document.getElementById('lista-reparo-cinza').innerHTML = '';
+    document.getElementById('lista-reparo-preto').innerHTML = '';
+
+    document.getElementById('lista-lib-branco').innerHTML = '';
+    document.getElementById('lista-lib-cinza').innerHTML = '';
+    document.getElementById('lista-lib-preto').innerHTML = '';
+    
+    const dashEstacoes = document.getElementById('dash-estacoes');
+    dashEstacoes.innerHTML = '';
+    
+    let contagemEstacoes = {};
+    gruposContagem.forEach(e => contagemEstacoes[e] = 0);
+    let contagemCoresReparo = { Branco: 0, Cinza: 0, Preto: 0 };
+    
+    let cntFaltaQA = 0;
+    let cntFaltaPDI = 0;
+
+    veiculos.forEach((v, i) => {
+      let grupo = v.estacao;
+      if (v.estacao.includes("BOLSÃO")) grupo = "BOLSÃO";
+      if (v.estacao === "TÚNEL DE POLIMENTO") grupo = "REP. PINTURA";
+      if (v.estacao === "ELEVACAR") grupo = "REP. PISTA";
+      
+      if(contagemEstacoes[grupo] !== undefined) contagemEstacoes[grupo]++;
+      contagemCoresReparo[v.cor]++;
+      
+      if(!v.qa_cp9) cntFaltaQA++;
+      if(!v.pdi) cntFaltaPDI++;
+
+      let optionsHTML = estacoesDisponiveis.map(est => 
+        `<option value="${est}" ${v.estacao === est ? 'selected' : ''}>${est}</option>`
+      ).join('');
+
+      const isBolsao = v.estacao.includes("BOLSÃO");
+      const iconeAlerta = isBolsao ? `<span class="blink-icon">🔺</span>` : '';
+      const vinClass = isBolsao ? 'vin-red' : '';
+      const timeStr = formatTime(v.atualizadoEm);
+      const timeColor = getColorByTime(v.atualizadoEm); 
+
+      const rowHtml = `
+        <div class="car-row">
+          <div class="car-info">
+            <div class="car-vin ${vinClass}">${iconeAlerta}${v.vin}</div>
+          </div>
+          
+          <div class="car-indicators no-print">
+            <button class="indicator-btn qa-cp9 ${v.qa_cp9 ? 'active' : ''}" onclick="toggleIndicator(${i}, 'veiculos', 'qa_cp9')">QA CP9</button>
+            <button class="indicator-btn pdi ${v.pdi ? 'active' : ''}" onclick="toggleIndicator(${i}, 'veiculos', 'pdi')">PDI</button>
+          </div>
+          
+          <div class="station-col">
+            <select class="badge-select ${getEstacaoClass(v.estacao)}" onchange="atualizarEstacao(${i}, this.value)">
+              ${optionsHTML}
+            </select>
+            <div class="car-time" style="color: ${timeColor};">Atualizado: ${timeStr}</div>
+          </div>
+          
+          <div class="car-actions no-print">
+            <button class="btn-action btn-liberar" onclick="liberarVeiculo(${i})" title="Liberar">LIB</button>
+            <button class="btn-action btn-del" onclick="removerVeiculo(${i})" title="Excluir">X</button>
+          </div>
+        </div>
+      `;
+
+      if(v.cor === 'Branco') document.getElementById('lista-reparo-branco').innerHTML += rowHtml;
+      else if(v.cor === 'Cinza') document.getElementById('lista-reparo-cinza').innerHTML += rowHtml;
+      else if(v.cor === 'Preto') document.getElementById('lista-reparo-preto').innerHTML += rowHtml;
+    });
+
+    dashEstacoes.innerHTML += `
+      <div class="sidebar-title">PENDÊNCIAS (PÁTIO)</div>
+      <div class="st-card-simple">
+        <div class="st-name">FALTA QA CP9</div>
+        <div class="st-count ${cntFaltaQA > 0 ? 'text-strong-red' : 'no-glow'}">${cntFaltaQA}</div>
+      </div>
+      <div class="st-card-simple">
+        <div class="st-name">FALTA PDI</div>
+        <div class="st-count ${cntFaltaPDI > 0 ? 'text-strong-silver' : 'no-glow'}">${cntFaltaPDI}</div>
+      </div>
+      <div style="height: 10px;"></div>
+
+      <div class="sidebar-title">POR COR</div>
+      <div class="st-card-simple">
+        <div class="st-name">BRANCO</div>
+        <div class="st-count">${contagemCoresReparo.Branco}</div>
+      </div>
+      <div class="st-card-simple">
+        <div class="st-name">CINZA</div>
+        <div class="st-count">${contagemCoresReparo.Cinza}</div>
+      </div>
+      <div class="st-card-simple">
+        <div class="st-name">PRETO</div>
+        <div class="st-count">${contagemCoresReparo.Preto}</div>
+      </div>
+      
+      <div class="sidebar-title" style="margin-top: 12px;">POR ESTAÇÃO</div>
+    `;
+
+    gruposContagem.forEach(est => {
+      dashEstacoes.innerHTML += `
+        <div class="st-card-simple">
+          <div class="st-name">${est}</div>
+          <div class="st-count">${contagemEstacoes[est]}</div>
+        </div>
+      `;
+    });
+
+    liberados.forEach((v, i) => {
+      const isBolsao = v.estacao.includes("BOLSÃO");
+      const iconeAlerta = isBolsao ? `<span class="blink-icon">🔺</span>` : '';
+      const vinClass = isBolsao ? 'vin-red' : '';
+      const timeStr = formatTime(v.atualizadoEm);
+      const timeColor = getColorByTime(v.atualizadoEm);
+
+      const rowHtml = `
+        <div class="car-row">
+          <div class="car-info">
+            <div class="car-vin ${vinClass}">${iconeAlerta}${v.vin}</div>
+          </div>
+          
+          <div class="car-indicators no-print">
+            <button class="indicator-btn qa-cp9 ${v.qa_cp9 ? 'active' : ''}" onclick="toggleIndicator(${i}, 'liberados', 'qa_cp9')">QA CP9</button>
+            <button class="indicator-btn pdi ${v.pdi ? 'active' : ''}" onclick="toggleIndicator(${i}, 'liberados', 'pdi')">PDI</button>
+          </div>
+          
+          <div class="station-col">
+            <span class="badge-texto ${getEstacaoClass(v.estacao)}">${v.estacao}</span>
+            <div class="car-time" style="color: ${timeColor};">Liberado: ${timeStr}</div>
+          </div>
+          
+          <div class="car-actions no-print">
+            <button class="btn-action btn-desfazer" onclick="desfazerLiberacao(${i})" title="Desfazer e Voltar">↩ DESFAZER</button>
+          </div>
+        </div>
+      `;
+
+      if(v.cor === 'Branco') document.getElementById('lista-lib-branco').innerHTML += rowHtml;
+      else if(v.cor === 'Cinza') document.getElementById('lista-lib-cinza').innerHTML += rowHtml;
+      else if(v.cor === 'Preto') document.getElementById('lista-lib-preto').innerHTML += rowHtml;
+    });
+
+    let totalContabilizadoGeral = Math.min(metas.Branco, metasAlvo.Branco) + Math.min(metas.Cinza, metasAlvo.Cinza) + Math.min(metas.Preto, metasAlvo.Preto);
+
+    document.getElementById('btn-reparo').innerText = `EM REPARO (${veiculos.length})`;
+    document.getElementById('btn-liberados').innerText = `LIBERADOS (${liberados.length})`;
+
+    document.getElementById('ct-branco').innerText = `${metas.Branco}/${metasAlvo.Branco}`;
+    document.getElementById('ct-cinza').innerText = `${metas.Cinza}/${metasAlvo.Cinza}`;
+    document.getElementById('ct-preto').innerText = `${metas.Preto}/${metasAlvo.Preto}`;
+    document.getElementById('ct-total').innerText = `${totalContabilizadoGeral}/${metasAlvo.Total}`;
+  }
+
+  document.getElementById('form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const vin = document.getElementById('vin').value.trim().toUpperCase();
+    const estacao = document.getElementById('estacao').value;
+    const cor = document.getElementById('cor').value;
+
+    if (veiculos.some(v => v.vin === vin) || liberados.some(v => v.vin === vin)) {
+      alert('ERRO: Este VIN já se encontra em reparo ou já foi liberado.');
+      return;
+    }
+
+    veiculos.push({ vin, estacao, cor, atualizadoEm: Date.now(), qa_cp9: false, pdi: false });
+    document.getElementById('form').reset();
+    document.getElementById('vin').focus();
+    salvarNoFirebase();
+  });
+
+  window.atualizarEstacao = function(idx, novaEstacao) {
+    veiculos[idx].estacao = novaEstacao;
+    veiculos[idx].atualizadoEm = Date.now();
+    salvarNoFirebase();
+  };
+
+  window.liberarVeiculo = function(idx) {
+    const v = veiculos[idx];
+    if (metas[v.cor] >= metasAlvo[v.cor]) {
+      if(!confirm(`A meta de ${metasAlvo[v.cor]} veículos da cor ${v.cor.toUpperCase()} já foi atingida. Deseja contabilizar este mesmo assim?`)) return;
+    }
+    
+    v.atualizadoEm = Date.now();
+    liberados.push(v);
+    metas[v.cor]++;
+    veiculos.splice(idx, 1);
+    salvarNoFirebase();
+  };
+
+  window.removerVeiculo = function(idx) {
+    if(confirm('Excluir este veículo SEM contabilizar?')) {
+      veiculos.splice(idx, 1);
+      salvarNoFirebase();
+    }
+  };
+
+  window.desfazerLiberacao = function(idx) {
+    if(confirm('Retornar este veículo para Reparo? O contador de metas será reduzido.')) {
+      const v = liberados[idx];
+      v.atualizadoEm = Date.now();
+      metas[v.cor]--; 
+      veiculos.push(v); 
+      liberados.splice(idx, 1); 
+      salvarNoFirebase();
+    }
+  };
+
+  // Atualização em tempo real (Semáforo do tempo)
+  setInterval(() => {
+    if(!isSyncing) renderizar();
+  }, 60000);
+
+</script>
+</body>
+</html>
