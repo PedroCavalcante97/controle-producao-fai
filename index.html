@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SISTEMA DE LANÇAMENTO - FAI (BETA v1.6)</title>
+<title>SISTEMA DE LANÇAMENTO - FAI (BETA v1.7)</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -35,7 +35,7 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
 .login-select option { background: var(--bg-panel); color: var(--branco); }
 .btn-login { width: 100%; padding: 14px; background: var(--cinza-destaque); color: #000; border: none; border-radius: 8px; font-family: 'DM Mono', monospace; font-weight: bold; font-size: 14px; cursor: pointer; letter-spacing: 1px; transition: opacity .2s; }
 .btn-login:hover { opacity: 0.9; }
-.login-erro { color: var(--vermelho-suave); font-size: 12px; margin-top: 12px; display: none; letter-spacing: 1px; }
+.login-erro { color: var(--vermelho-suave); font-size: 12px; margin-top: 12px; margin-bottom: 12px; display: none; letter-spacing: 1px; }
 .app-container { display: none; flex-direction: column; min-height: 100vh; }
 .header { background: var(--bg-panel); border-bottom: 1px solid var(--border); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 .header-left { display: flex; flex-direction: column; gap: 4px; }
@@ -82,16 +82,20 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
 #parada-timer { font-size: 20px; color: var(--vermelho-suave); font-weight: bold; letter-spacing: 2px; margin-top: -10px; margin-bottom: 16px; display: none; text-shadow: 0 0 10px rgba(255,92,92,0.3); }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 92, 92, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 92, 92, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 92, 92, 0); } }
 
+.bloqueio-banner { display: none; color: var(--amarelo-destaque); border: 1px solid var(--amarelo-destaque); background: rgba(255, 204, 0, 0.06); padding: 10px 24px; border-radius: 8px; letter-spacing: 1px; font-size: 12px; font-weight: bold; text-align: center; }
+
 .alin-btns { display: flex; gap: 12px; }
 .alin-btn { padding: 12px 32px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg-panel); color: var(--texto-sec); font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .2s; letter-spacing: 1px; }
 
 .form-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 500px; }
 .form-label { font-size: 12px; color: var(--texto-sec); letter-spacing: 3px; text-transform: uppercase; }
 #vin-input { width: 100%; padding: 20px 24px; border-radius: 12px; border: 2px solid var(--border); background: var(--bg-page); color: var(--branco); font-family: 'DM Mono', monospace; font-size: 24px; letter-spacing: 4px; text-align: center; outline: none; transition: border-color .2s; }
+#vin-input:disabled { opacity: .4; cursor: not-allowed; }
 
 /* Animação Botão Lançar */
 .btn-lancar { width: 100%; padding: 16px; border-radius: 10px; border: none; background: var(--cinza-destaque); color: #000; font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 900; letter-spacing: 2px; cursor: pointer; transition: background 0.4s ease, color 0.4s ease, opacity 0.2s; }
 .btn-lancar:hover { opacity: .85; }
+.btn-lancar:disabled { opacity: .4; cursor: not-allowed; }
 .btn-lancar-azul { background: var(--azul-ativo) !important; color: #fff !important; }
 .btn-lancar-amarelo { background: var(--amarelo-claro) !important; color: #000 !important; }
 
@@ -183,14 +187,29 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
 </div>
 
 <div class="app-container" id="app-container">
-  
+
+  <!-- MODAL: INICIAR NOVO DIA (gated por senha) -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <h2>&#9888; INICIAR NOVO DIA</h2>
-      <p>Todos os VINs e dados de produção serão apagados do Firebase.<br>Essa ação não pode ser desfeita.</p>
+      <p>Todos os VINs e dados de produção serão apagados do Firebase.<br>Essa ação não pode ser desfeita.<br>Digite a senha de liberação para confirmar.</p>
+      <input type="password" class="login-input" id="novo-dia-senha" placeholder="SENHA DE LIBERAÇÃO" autocomplete="off" onkeydown="if(event.key==='Enter') confirmarNovoDia()">
+      <div class="login-erro" id="novo-dia-erro">&#10006; SENHA INCORRETA</div>
       <div class="modal-btns">
         <button class="modal-btn cancel" onclick="fecharModal()">CANCELAR</button>
         <button class="modal-btn confirm" onclick="confirmarNovoDia()">CONFIRMAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ALERTA AUTOMÁTICO DE 3º TURNO -->
+  <div class="modal-overlay" id="modal-turno3-overlay">
+    <div class="modal">
+      <h2 style="color:var(--amarelo-destaque)">&#9888; NOVO DIA SE APROXIMA</h2>
+      <p>O 3º Turno foi iniciado, encerrando o dia operacional.<br>Você pode iniciar o novo dia agora (apaga os dados, requer senha) ou apenas visualizar a produção hora a hora enquanto aguarda a liberação.</p>
+      <div class="modal-btns">
+        <button class="modal-btn cancel" onclick="visualizarHoraAHoraTurno3()">VISUALIZAR HORA A HORA</button>
+        <button class="modal-btn confirm" style="background:var(--amarelo-destaque); color:#000;" onclick="abrirModalNovoDiaViaPopup()">INICIAR NOVO DIA</button>
       </div>
     </div>
   </div>
@@ -255,7 +274,7 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
   <div class="header">
     <div class="header-left">
       <div class="header-title">• SISTEMA DE LANÇAMENTO</div>
-      <div class="header-sub">SISTEMA DE LANÇAMENTO - FAI (BETA v1.6)</div>
+      <div class="header-sub">SISTEMA DE LANÇAMENTO - FAI (BETA v1.7)</div>
     </div>
     <div class="header-right">
       <div class="user-status-box">
@@ -289,7 +308,7 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
       <button class="turno-btn" id="t-btn-3" onclick="selecionarTurno(3)">3&#186; TURNO</button>
     </div>
     <span class="turno-info" id="turno-info-label">06:00 – 15:48</span>
-    <button class="btn-novo-dia" id="btn-novo-dia" onclick="tentarExecutarAcaoRestrita(abrirModal)">&#8634; INICIAR NOVO DIA</button>
+    <button class="btn-novo-dia" id="btn-novo-dia" onclick="abrirModal()">&#8634; INICIAR NOVO DIA</button>
   </div>
 
   <div class="nav" id="nav-bar">
@@ -306,6 +325,7 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
       <div class="lancamento-wrap">
         <div class="relogio" id="relogio">00:00:00</div>
         <div id="parada-timer">TEMPO DE PARADA: 00:00</div>
+        <div class="bloqueio-banner" id="bloqueio-lancamento-banner">&#9888; SISTEMA AGUARDANDO REINÍCIO DO DIA — LANÇAMENTOS BLOQUEADOS</div>
         <button id="btn-parada" class="btn-parada" onclick="toggleParada()">&#9203; INICIAR PARADA</button>
 
         <div class="turno-ativo-badge" id="turno-badge">1&#186; TURNO • 06:00 – 15:48</div>
@@ -409,6 +429,12 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
         <thead><tr><th>USUÁRIO</th><th>PERMISSÃO</th><th>AÇÃO</th></tr></thead>
         <tbody id="tabela-usuarios-body"></tbody>
       </table>
+
+      <div class="tabela-label" style="margin-top:32px;">ÚLTIMOS 5 REINÍCIOS DE DIA</div>
+      <table class="tabela-nativa" style="max-width:800px;">
+        <thead><tr><th>DATA/HORA</th><th>USUÁRIO</th><th>SENHA UTILIZADA</th></tr></thead>
+        <tbody id="tabela-reinicios-body"></tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -420,6 +446,15 @@ const db = firebase.database();
 let currentUserRole = "operador";
 let listaUsuariosCadastrados = [];
 let firebaseConectado = false;
+
+// Senhas autorizadas para liberar o "Iniciar Novo Dia".
+// Adicione novas senhas nesta lista futuramente (ex: "122464", "SUANOVASENHA").
+const SENHAS_NOVO_DIA = ["122464"];
+
+// Estado do bloqueio de lançamento (sincronizado via Firebase para todos os PCs)
+let aguardandoNovoDiaAtivo = false;
+let modalTurno3JaExibido = false;
+
 const TURNOS_INFO = {
   1: { label: "1º TURNO", range: "06:00 – 15:48" },
   2: { label: "2º TURNO", range: "15:48 – 00:00" },
@@ -483,9 +518,61 @@ function atualizarMetaLive(faixaId, novaMeta) { if (!verificarPermissao()) { abr
 function sincronizarListaMassivaGlobal() { db.ref("config/massiva").on("value", (snapshot) => { const dados = snapshot.val(); vinsMassivaLista = dados ? dados.split("\n").map(v => v.trim().toUpperCase()).filter(v => v.length > 0) : []; const textarea = document.getElementById("massiva-list-input"); if (textarea && document.activeElement !== textarea) { textarea.value = vinsMassivaLista.join("\n"); } atualizarContadores(); renderAlinhamento(); }); }
 function salvarListaMassivaFirebase() { const texto = document.getElementById("massiva-list-input").value; db.ref("config/massiva").set(texto).then(() => { document.getElementById("modal-massiva-overlay").classList.add("show"); }); }
 
+// BLOQUEIO / REINÍCIO DE DIA (sincronizado entre todos os PCs via Firebase)
+function sincronizarBloqueioNovoDia() {
+  db.ref("producao/aguardandoNovoDia").on("value", (snapshot) => {
+    aguardandoNovoDiaAtivo = snapshot.val() === true;
+    atualizarBannerBloqueio();
+    if (aguardandoNovoDiaAtivo) {
+      if (!modalTurno3JaExibido) {
+        document.getElementById("modal-turno3-overlay").classList.add("show");
+        modalTurno3JaExibido = true;
+      }
+    } else {
+      modalTurno3JaExibido = false;
+      document.getElementById("modal-turno3-overlay").classList.remove("show");
+    }
+  });
+}
+function atualizarBannerBloqueio() {
+  const banner = document.getElementById("bloqueio-lancamento-banner");
+  const input = document.getElementById("vin-input");
+  const btn = document.getElementById("btn-lancar-vin");
+  if (banner) banner.style.display = aguardandoNovoDiaAtivo ? "block" : "none";
+  if (input) input.disabled = aguardandoNovoDiaAtivo;
+  if (btn) btn.disabled = aguardandoNovoDiaAtivo;
+}
+function dispararAlertaNovoDia() {
+  if (!firebaseConectado) return;
+  db.ref("producao/aguardandoNovoDia").once("value", (snap) => {
+    if (snap.val() !== true) db.ref("producao/aguardandoNovoDia").set(true);
+  });
+}
+function visualizarHoraAHoraTurno3() { document.getElementById("modal-turno3-overlay").classList.remove("show"); abrirAba("alinhamento"); }
+function abrirModalNovoDiaViaPopup() { document.getElementById("modal-turno3-overlay").classList.remove("show"); abrirModal(); }
+
+function sincronizarLogReinicios() {
+  db.ref("producao/logReinicios").limitToLast(5).on("value", (snapshot) => {
+    const dados = snapshot.val();
+    const lista = dados ? Object.values(dados).sort((a,b) => (a.timestamp||0)-(b.timestamp||0)).reverse() : [];
+    renderTabelaReinicios(lista);
+  });
+}
+function renderTabelaReinicios(lista) {
+  const tbody = document.getElementById("tabela-reinicios-body");
+  if (!tbody) return;
+  if (!lista || lista.length === 0) { tbody.innerHTML = "<tr><td colspan='3'>Nenhum reinício registrado ainda.</td></tr>"; return; }
+  tbody.innerHTML = lista.map(r => `<tr><td>${r.timestamp ? new Date(r.timestamp).toLocaleString("pt-BR") : "-"}</td><td>${r.usuario || "-"}</td><td style="font-weight:bold; letter-spacing:2px;">${r.senhaMascarada || "----"}</td></tr>`).join("");
+}
+function registrarReinicio(senha) {
+  const mascarada = senha.length >= 4 ? (senha.substring(0,2) + "**" + senha.substring(senha.length-2)) : "****";
+  const usuario = document.getElementById("user-status-display") ? document.getElementById("user-status-display").textContent : "-";
+  db.ref("producao/logReinicios").push({ timestamp: firebase.database.ServerValue.TIMESTAMP, senhaMascarada: mascarada, usuario: usuario });
+}
+
 function conectarSincronizacaoFirebase() {
   if (firebaseConectado) return; firebaseConectado = true;
-  sincronizarMetasGlobais(); sincronizarListaMassivaGlobal();
+  sincronizarMetasGlobais(); sincronizarListaMassivaGlobal(); sincronizarBloqueioNovoDia(); sincronizarLogReinicios();
   db.ref("producao/veiculos").on("value", (snapshot) => {
     const dados = snapshot.val(); veiculos = dados ? Object.keys(dados).map(key => ({ idFirebase: key, ...dados[key] })) : [];
     atualizarContadores(); renderAlinhamento(); renderIndicador(); renderImpactos();
@@ -515,7 +602,19 @@ function getMinutosDoDia(ts) { const d = new Date(ts); return d.getHours() * 60 
 function identificarFaixa(ts) { const m = getMinutosDoDia(ts); return FAIXAS.find(f => m >= f.mIni && m < f.mFim) || FAIXAS[0]; }
 function horaFmt(ts) { return new Date(ts).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}); }
 function obterDataOperacionalString(ts) { const d = new Date(ts); if (d.getHours() < 6) { d.setDate(d.getDate() - 1); } return d.toISOString().split('T')[0]; }
-function atualizarRelogio() { const agora = Date.now(); document.getElementById("relogio").textContent = new Date(agora).toLocaleTimeString("pt-BR"); const faixaAtual = identificarFaixa(agora); if (turnoRealAtual !== faixaAtual.turno) { turnoRealAtual = faixaAtual.turno; document.getElementById("turno-badge").textContent = `${TURNOS_INFO[turnoRealAtual].label} • ${TURNOS_INFO[turnoRealAtual].range}`; } }
+function atualizarRelogio() {
+  const agora = Date.now();
+  document.getElementById("relogio").textContent = new Date(agora).toLocaleTimeString("pt-BR");
+  const faixaAtual = identificarFaixa(agora);
+  if (turnoRealAtual !== faixaAtual.turno) {
+    const turnoAnterior = turnoRealAtual;
+    turnoRealAtual = faixaAtual.turno;
+    document.getElementById("turno-badge").textContent = `${TURNOS_INFO[turnoRealAtual].label} • ${TURNOS_INFO[turnoRealAtual].range}`;
+    if (turnoRealAtual === 3 && turnoAnterior !== 3) {
+      dispararAlertaNovoDia();
+    }
+  }
+}
 setInterval(atualizarRelogio, 1000);
 
 // TEMPO DE PARADA LOGIC
@@ -545,7 +644,7 @@ function limparEstadoParada() { paradaInicioTs = null; localStorage.removeItem("
 
 // NAVEGAÇÃO E SELEÇÃO
 function selecionarTurno(n) { turnoView = n; localStorage.setItem("ali_turno", turnoView); [1,2,3].forEach(i => { document.getElementById("t-btn-"+i).className = "turno-btn"+(i===n?" active":""); }); document.getElementById("turno-info-label").textContent = TURNOS_INFO[n].range; atualizarContadores(); renderAlinhamento(); renderIndicador(); renderImpactos(); }
-function abrirAba(id) { document.querySelectorAll(".aba").forEach(a => a.classList.remove("active")); document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active")); document.getElementById("aba-"+id).classList.add("active"); const idx = ["lancamento","alinhamento","indicador","impactos","massiva","usuarios"].indexOf(id); if(idx !== -1) document.querySelectorAll(".nav-btn")[idx].classList.add("active"); if (id==="alinhamento") renderAlinhamento(); if (id==="indicador") renderIndicador(); if (id==="impactos") renderImpactos(); if (id==="lancamento") setTimeout(()=>document.getElementById("vin-input").focus(),100); }
+function abrirAba(id) { document.querySelectorAll(".aba").forEach(a => a.classList.remove("active")); document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active")); document.getElementById("aba-"+id).classList.add("active"); const idx = ["lancamento","alinhamento","indicador","impactos","massiva","usuarios"].indexOf(id); if(idx !== -1) document.querySelectorAll(".nav-btn")[idx].classList.add("active"); if (id==="alinhamento") renderAlinhamento(); if (id==="indicador") renderIndicador(); if (id==="impactos") renderImpactos(); if (id==="lancamento") setTimeout(()=>{ if(!aguardandoNovoDiaAtivo) document.getElementById("vin-input").focus(); },100); }
 function selecionarAlin(alin) { 
   alinSelecionado = alin; 
   const input = document.getElementById("vin-input"); 
@@ -570,6 +669,10 @@ function selecionarSubTab(alin) { subTabSelecionada = alin; document.getElementB
 
 // LANÇAMENTO E RETORNOS
 function lancar() {
+  if (aguardandoNovoDiaAtivo) {
+    mostrarFeedback("erro", "SISTEMA BLOQUEADO", "Aguardando reinício do dia. Use INICIAR NOVO DIA.");
+    return;
+  }
   const input = document.getElementById("vin-input"); const vin = input.value.trim().toUpperCase(); if (!vin) return;
   const dup = veiculos.find(v => v.vin === vin);
   if (dup) { 
@@ -582,8 +685,9 @@ function lancar() {
   executarLancamento(vin, ""); input.value = "";
 }
 function executarLancamento(vin, motivoRetorno) {
+  // NOTA: o sistema não apaga mais dados automaticamente por virada de dia.
+  // O apagamento só ocorre via confirmarNovoDia(), com senha de liberação.
   const agoraRef = Date.now(); const faixaLida = identificarFaixa(agoraRef); const dataOpAtual = obterDataOperacionalString(agoraRef);
-  if (veiculos.length > 0 && veiculos[0].dataOperacional !== dataOpAtual) { db.ref("producao/veiculos").remove(); db.ref("producao/paradas").remove(); veiculos = []; paradas = []; }
   const novo = { vin: vin, alinhamento: alinSelecionado, timestamp: firebase.database.ServerValue.TIMESTAMP, turno: faixaLida.turno, faixaId: faixaLida.id, dataOperacional: dataOpAtual, retorno: motivoRetorno?true:false, motivo: motivoRetorno||"" };
   db.ref("producao/veiculos").push().set(novo, (error) => { if (!error) mostrarFeedback("ok", "\u2713 " + vin, alinSelecionado); });
 }
@@ -595,7 +699,7 @@ function pesquisarVIN(query) { const q = query.trim().toUpperCase(); const statu
 function atualizarContadores() { const vT = veiculos.filter(v => v.turno === turnoView); const totalMassivasBipadas = veiculos.filter(v => vinsMassivaLista.includes(v.vin)).length; document.getElementById("cnt-massiva").textContent = totalMassivasBipadas; document.getElementById("cnt-alin1").textContent = vT.filter(v=>v.alinhamento==="ALINHAMENTO 1").length; document.getElementById("cnt-alin2").textContent = vT.filter(v=>v.alinhamento==="ALINHAMENTO 2").length; document.getElementById("cnt-parcial").textContent = vT.length; document.getElementById("total-geral").textContent = veiculos.length; }
 
 let fbTimer = null;
-function mostrarFeedback(tipo, msg, sub) { const el = document.getElementById("feedback"); el.style.display = "block"; el.className = "feedback "+tipo; el.innerHTML = `<div class="feedback-msg">${msg}</div><div class="feedback-sub">${sub}</div>`; clearTimeout(fbTimer); fbTimer = setTimeout(() => { el.style.display = "none"; if (!vinPendenteRetorno && !paradaInicioTs) document.getElementById("vin-input").focus(); }, 2500); }
+function mostrarFeedback(tipo, msg, sub) { const el = document.getElementById("feedback"); el.style.display = "block"; el.className = "feedback "+tipo; el.innerHTML = `<div class="feedback-msg">${msg}</div><div class="feedback-sub">${sub}</div>`; clearTimeout(fbTimer); fbTimer = setTimeout(() => { el.style.display = "none"; if (!vinPendenteRetorno && !paradaInicioTs && !aguardandoNovoDiaAtivo) document.getElementById("vin-input").focus(); }, 2500); }
 
 // RENDERIZAÇÃO DE INTERFACE
 function renderAlinhamento() {
@@ -692,9 +796,34 @@ function renderImpactos() {
   }
 }
 
-function abrirModal() { document.getElementById("modal-overlay").classList.add("show"); }
+function abrirModal() {
+  document.getElementById("modal-overlay").classList.add("show");
+  const senhaInput = document.getElementById("novo-dia-senha");
+  const erro = document.getElementById("novo-dia-erro");
+  senhaInput.value = "";
+  erro.style.display = "none";
+  setTimeout(() => senhaInput.focus(), 100);
+}
 function fecharModal() { document.getElementById("modal-overlay").classList.remove("show"); }
-function confirmarNovoDia() { db.ref("producao/veiculos").remove().then(() => { db.ref("producao/paradas").remove().then(() => { fecharModal(); abrirAba("lancamento"); }); }); }
+function confirmarNovoDia() {
+  const senhaInput = document.getElementById("novo-dia-senha");
+  const erro = document.getElementById("novo-dia-erro");
+  const senha = senhaInput.value.trim();
+  if (!SENHAS_NOVO_DIA.includes(senha)) {
+    erro.style.display = "block";
+    senhaInput.value = "";
+    senhaInput.focus();
+    return;
+  }
+  registrarReinicio(senha);
+  db.ref("producao/veiculos").remove().then(() => {
+    db.ref("producao/paradas").remove().then(() => {
+      db.ref("producao/aguardandoNovoDia").set(false);
+      fecharModal();
+      abrirAba("lancamento");
+    });
+  });
+}
 
 window.onload = () => { atualizarRelogio(); inicializarUsuariosSistema(); turnoView = parseInt(localStorage.getItem("ali_turno")||"1"); checarSessaoAtiva(); checarEstadoParada(); };
 </script>
