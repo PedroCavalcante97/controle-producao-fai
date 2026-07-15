@@ -93,11 +93,14 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
 #vin-input:disabled { opacity: .4; cursor: not-allowed; }
 
 /* Animação Botão Lançar */
-.btn-lancar { width: 100%; padding: 16px; border-radius: 10px; border: none; background: var(--cinza-destaque); color: #000; font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 900; letter-spacing: 2px; cursor: pointer; transition: background 0.4s ease, color 0.4s ease, opacity 0.2s; }
+.btn-lancar { width: 100%; padding: 16px; border-radius: 10px; border: none; background: var(--cinza-destaque); color: #000; font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 900; letter-spacing: 2px; cursor: pointer; transition: background-color 1.1s ease, color 1.1s ease, opacity 0.2s; }
 .btn-lancar:hover { opacity: .85; }
 .btn-lancar:disabled { opacity: .4; cursor: not-allowed; }
 .btn-lancar-azul { background: var(--azul-ativo) !important; color: #fff !important; }
 .btn-lancar-amarelo { background: var(--amarelo-claro) !important; color: #000 !important; }
+.btn-lancar-sucesso { background: var(--verde-suave) !important; color: #000 !important; }
+.btn-lancar-erro { background: var(--vermelho-suave) !important; color: #fff !important; }
+#btn-lancar-texto { display: inline-block; transition: opacity 0.35s ease; }
 
 .contadores { display: flex; gap: 48px; margin-top: 16px; }
 .contador { text-align: center; }
@@ -274,7 +277,7 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
   <div class="header">
     <div class="header-left">
       <div class="header-title">• SISTEMA DE LANÇAMENTO</div>
-      <div class="header-sub">SISTEMA DE LANÇAMENTO - FAI (BETA v1.7)</div>
+      <div class="header-sub">SISTEMA DE LANÇAMENTO - FAI (BETA v2.0)</div>
     </div>
     <div class="header-right">
       <div class="user-status-box">
@@ -307,7 +310,7 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
       <button class="turno-btn" id="t-btn-2" onclick="selecionarTurno(2)">2&#186; TURNO</button>
       <button class="turno-btn" id="t-btn-3" onclick="selecionarTurno(3)">3&#186; TURNO</button>
     </div>
-    <span class="turno-info" id="turno-info-label">06:00 – 15:48</span>
+    <span class="turno-info" id="turno-info-label">06:10 – 15:48</span>
     <button class="btn-novo-dia" id="btn-novo-dia" onclick="abrirModal()">&#8634; INICIAR NOVO DIA</button>
   </div>
 
@@ -328,7 +331,7 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
         <div class="bloqueio-banner" id="bloqueio-lancamento-banner">&#9888; SISTEMA AGUARDANDO REINÍCIO DO DIA — LANÇAMENTOS BLOQUEADOS</div>
         <button id="btn-parada" class="btn-parada" onclick="toggleParada()">&#9203; INICIAR PARADA</button>
 
-        <div class="turno-ativo-badge" id="turno-badge">1&#186; TURNO • 06:00 – 15:48</div>
+        <div class="turno-ativo-badge" id="turno-badge">1&#186; TURNO • 06:10 – 15:48</div>
         <div class="alin-btns">
           <button class="alin-btn btn-azul active" id="btn-alin-1" onclick="selecionarAlin('ALINHAMENTO 1')">ALINHAMENTO 1</button>
           <button class="alin-btn btn-amarelo" id="btn-alin-2" onclick="selecionarAlin('ALINHAMENTO 2')">ALINHAMENTO 2</button>
@@ -336,7 +339,7 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
         <div class="form-wrap">
           <div class="form-label">Bipe ou digite o VIN</div>
           <input id="vin-input" class="input-azul" type="text" placeholder="VIN DO VEÍCULO" autocomplete="off" onkeydown="if(event.key==='Enter') lancar()">
-          <button id="btn-lancar-vin" class="btn-lancar btn-lancar-azul" onclick="lancar()">LANÇAR</button>
+          <button id="btn-lancar-vin" class="btn-lancar btn-lancar-azul" onclick="lancar()"><span id="btn-lancar-texto">REGISTRAR</span></button>
         </div>
         <div id="feedback" style="display:none"></div>
         <div class="contadores">
@@ -388,8 +391,12 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
           <div class="user-status-name" id="impacto-total-retornos" style="font-size:32px; color:var(--amarelo-destaque);">0</div>
         </div>
         <div class="user-status-box" style="flex:1; min-width:200px;">
-          <div class="user-status-label">TEMPO TOTAL PARADO</div>
-          <div class="user-status-name" id="impacto-total-tempo" style="font-size:32px; color:var(--vermelho-suave);">00:00</div>
+          <div class="user-status-label">TEMPO PARADO — ALINHAMENTO 1</div>
+          <div class="user-status-name" id="impacto-tempo-alin1" style="font-size:32px; color:var(--azul-ativo);">00h 00m</div>
+        </div>
+        <div class="user-status-box" style="flex:1; min-width:200px;">
+          <div class="user-status-label">TEMPO PARADO — ALINHAMENTO 2</div>
+          <div class="user-status-name" id="impacto-tempo-alin2" style="font-size:32px; color:var(--amarelo-claro);">00h 00m</div>
         </div>
       </div>
       <div class="tabela-label">HISTÓRICO DE PARADAS</div>
@@ -456,12 +463,13 @@ let aguardandoNovoDiaAtivo = false;
 let modalTurno3JaExibido = false;
 
 const TURNOS_INFO = {
-  1: { label: "1º TURNO", range: "06:00 – 15:48" },
-  2: { label: "2º TURNO", range: "15:48 – 00:00" },
-  3: { label: "3º TURNO", range: "01:00 – 05:00" }
+  1: { label: "1º TURNO", range: "06:10 – 15:48" },
+  2: { label: "2º TURNO", range: "15:48 – 1:02" },
+  3: { label: "3º TURNO", range: "01:00 – 6:10" }
 };
+// Trocas reais de turno usadas para classificar os lançamentos: 06:05, 15:50 e 01:00
 let FAIXAS = [
-  { id: "t1_06", turno: 1, lbl: "06h", mIni: 360, mFim: 420, meta: 28 },
+  { id: "t1_06", turno: 1, lbl: "06h", mIni: 365, mFim: 420, meta: 28 },
   { id: "t1_07", turno: 1, lbl: "07h", mIni: 420, mFim: 480, meta: 30 },
   { id: "t1_08", turno: 1, lbl: "08h", mIni: 480, mFim: 540, meta: 30 },
   { id: "t1_09", turno: 1, lbl: "09h", mIni: 540, mFim: 600, meta: 30 },
@@ -470,8 +478,8 @@ let FAIXAS = [
   { id: "t1_12", turno: 1, lbl: "12h", mIni: 720, mFim: 780, meta: 20 },
   { id: "t1_13", turno: 1, lbl: "13h", mIni: 780, mFim: 840, meta: 30 },
   { id: "t1_14", turno: 1, lbl: "14h", mIni: 840, mFim: 900, meta: 28 },
-  { id: "t1_15", turno: 1, lbl: "15h", mIni: 900, mFim: 960, meta: 20 },
-  { id: "t2_16", turno: 2, lbl: "16h", mIni: 960, mFim: 1020, meta: 20 },
+  { id: "t1_15", turno: 1, lbl: "15h", mIni: 900, mFim: 950, meta: 20 },
+  { id: "t2_16", turno: 2, lbl: "16h", mIni: 950, mFim: 1020, meta: 20 },
   { id: "t2_17", turno: 2, lbl: "17h", mIni: 1020, mFim: 1080, meta: 21 },
   { id: "t2_18", turno: 2, lbl: "18h", mIni: 1080, mFim: 1140, meta: 19 },
   { id: "t2_19", turno: 2, lbl: "19h", mIni: 1140, mFim: 1200, meta: 14 },
@@ -484,9 +492,9 @@ let FAIXAS = [
   { id: "t3_02", turno: 3, lbl: "02h", mIni: 120, mFim: 180, meta: 17 },
   { id: "t3_03", turno: 3, lbl: "03h", mIni: 180, mFim: 240, meta: 11 },
   { id: "t3_04", turno: 3, lbl: "04h", mIni: 240, mFim: 300, meta: 17 },
-  { id: "t3_05", turno: 3, lbl: "05h", mIni: 300, mFim: 360, meta: 17 }
+  { id: "t3_05", turno: 3, lbl: "05h", mIni: 300, mFim: 365, meta: 17 }
 ];
-const PREFIXOS_MODELOS = { "T-19": ["95PB"], "T-1E": ["95PE"], "T-18": ["95PF"], "UNI-T": ["95PL"], "CS75": ["95PK"] };
+const PREFIXOS_MODELOS = { "T-19": ["95PB"], "T-1E": ["95PE"], "T-18": ["95PF"], "UNI-T": ["95PL"], "CS75": ["95PK"], "C655": ["95PJCL61D"] };
 let veiculos = [];
 let paradas = [];
 let turnoView = 1;
@@ -668,12 +676,22 @@ function selecionarAlin(alin) {
 function selecionarSubTab(alin) { subTabSelecionada = alin; document.getElementById("subtab-1").className = "sub-tab"+(alin==="ALINHAMENTO 1"?" active":""); document.getElementById("subtab-2").className = "sub-tab"+(alin==="ALINHAMENTO 2"?" active":""); renderAlinhamento(); }
 
 // LANÇAMENTO E RETORNOS
+// Verifica se o VIN começa com um dos prefixos de modelo conhecidos (impede VIN incompleto, ex: só o sufixo sem o prefixo)
+function vinTemPrefixoValido(vin) {
+  const todosPrefixos = Object.values(PREFIXOS_MODELOS).flat();
+  return todosPrefixos.some(p => vin.startsWith(p));
+}
+
 function lancar() {
   if (aguardandoNovoDiaAtivo) {
     mostrarFeedback("erro", "SISTEMA BLOQUEADO", "Aguardando reinício do dia. Use INICIAR NOVO DIA.");
     return;
   }
   const input = document.getElementById("vin-input"); const vin = input.value.trim().toUpperCase(); if (!vin) return;
+  if (!vinTemPrefixoValido(vin)) {
+    animarBotaoLancarErro("VIN INCORRETO");
+    return;
+  }
   const dup = veiculos.find(v => v.vin === vin);
   if (dup) { 
     vinPendenteRetorno = vin; mostrarFeedback("erro", vin, `REPETIDO NO ${dup.alinhamento}.`); 
@@ -689,7 +707,39 @@ function executarLancamento(vin, motivoRetorno) {
   // O apagamento só ocorre via confirmarNovoDia(), com senha de liberação.
   const agoraRef = Date.now(); const faixaLida = identificarFaixa(agoraRef); const dataOpAtual = obterDataOperacionalString(agoraRef);
   const novo = { vin: vin, alinhamento: alinSelecionado, timestamp: firebase.database.ServerValue.TIMESTAMP, turno: faixaLida.turno, faixaId: faixaLida.id, dataOperacional: dataOpAtual, retorno: motivoRetorno?true:false, motivo: motivoRetorno||"" };
-  db.ref("producao/veiculos").push().set(novo, (error) => { if (!error) mostrarFeedback("ok", "\u2713 " + vin, alinSelecionado); });
+  db.ref("producao/veiculos").push().set(novo, (error) => { if (!error) animarBotaoLancarSucesso(vin); });
+}
+function animarBotaoLancarSucesso(vin) { animarBotaoLancar("btn-lancar-sucesso", vin); }
+function animarBotaoLancarErro(msg) { animarBotaoLancar("btn-lancar-erro", msg); }
+function animarBotaoLancar(classeAnim, texto) {
+  const btn = document.getElementById("btn-lancar-vin");
+  const span = document.getElementById("btn-lancar-texto");
+  if (!btn || !span) return;
+
+  clearTimeout(btn._animHoldTimer);
+  clearTimeout(btn._animSwapTimer);
+  if (!span.dataset.textoOriginal) span.dataset.textoOriginal = span.textContent;
+
+  const HOLD_MS = 1700;     // tempo que o botão fica na cor de destaque mostrando o texto
+  const TEXT_FADE_MS = 350; // fade do texto, mais rápido que o fade da cor (para sumir antes)
+
+  btn.classList.remove("btn-lancar-sucesso", "btn-lancar-erro");
+  span.style.opacity = "1";
+  span.textContent = texto;
+  void btn.offsetWidth; // força o reflow para garantir que a transição de cor dispare
+  btn.classList.add(classeAnim);
+
+  btn._animHoldTimer = setTimeout(() => {
+    // O texto começa a sumir (fade-out) no mesmo instante em que a cor começa a voltar ao normal,
+    // mas como o fade do texto é bem mais rápido, ele já estará invisível antes da cor terminar.
+    span.style.opacity = "0";
+    btn.classList.remove(classeAnim);
+
+    btn._animSwapTimer = setTimeout(() => {
+      span.textContent = span.dataset.textoOriginal;
+      span.style.opacity = "1";
+    }, TEXT_FADE_MS);
+  }, HOLD_MS);
 }
 function removerRegistroLive(idFirebase) { tentarExecutarAcaoRestrita(() => { db.ref("producao/veiculos/" + idFirebase).remove(); }); }
 function verificarOutroMotivo(val) { const input = document.getElementById("retorno-especificar"); input.style.display = (val === "Outro motivo") ? "block" : "none"; if(val === "Outro motivo") input.focus(); }
@@ -748,9 +798,9 @@ function renderIndicador() {
   }).join("");
   const boxParcial = document.getElementById("ind-parcial-tabelas"); if(boxParcial) boxParcial.innerHTML = `<table class="tabela-nativa"><thead><tr><th>W/P</th><th>META</th><th>PROD</th><th>DIF</th><th>%</th></tr></thead><tbody>${lines}</tbody><tfoot><tr><td>TTL</td><td>${pTotMeta}</td><td>${pTotProd}</td><td class="${(pTotProd-pTotMeta) >= 0 ? 'positivo' : 'negativo'}">${(pTotProd-pTotMeta) >= 0 ? '+' + (pTotProd-pTotMeta) : (pTotProd-pTotMeta)}</td><td class="${(pTotProd-pTotMeta) >= 0 ? 'positivo' : 'negativo'}">${pTotMeta>0?Math.round((pTotProd/pTotMeta)*100):0}%</td></tr></tfoot></table>`;
   
-  let contagemModelos = { "T-19": 0, "T-1E": 0, "T-18": 0, "UNI-T": 0, "CS75": 0, "Outros": 0 };
-  veiculos.forEach(v => { if(v.vin && v.vin.length >= 4) { const p4 = v.vin.substring(0,4); let c = false; for (const [m, px] of Object.entries(PREFIXOS_MODELOS)) { if (px.some(x => p4.startsWith(x))) { contagemModelos[m]++; c = true; break; } } if(!c) contagemModelos["Outros"]++; } });
-  const boxModelos = document.getElementById("ind-modelos-wrap"); if(boxModelos) boxModelos.innerHTML = `<table class="tabela-nativa"><tbody><tr><td>T-19: ${contagemModelos["T-19"]}</td><td>T-1E: ${contagemModelos["T-1E"]}</td><td>T-18: ${contagemModelos["T-18"]}</td><td>UNI-T: ${contagemModelos["UNI-T"]}</td><td>CS75: ${contagemModelos["CS75"]}</td></tr></tbody></table>`;
+  let contagemModelos = { "T-19": 0, "T-1E": 0, "T-18": 0, "UNI-T": 0, "CS75": 0, "C655": 0, "Outros": 0 };
+  veiculos.forEach(v => { if(v.vin) { let c = false; for (const [m, px] of Object.entries(PREFIXOS_MODELOS)) { if (px.some(x => v.vin.startsWith(x))) { contagemModelos[m]++; c = true; break; } } if(!c) contagemModelos["Outros"]++; } });
+  const boxModelos = document.getElementById("ind-modelos-wrap"); if(boxModelos) boxModelos.innerHTML = `<table class="tabela-nativa"><tbody><tr><td>T-19: ${contagemModelos["T-19"]}</td><td>T-1E: ${contagemModelos["T-1E"]}</td><td>T-18: ${contagemModelos["T-18"]}</td><td>UNI-T: ${contagemModelos["UNI-T"]}</td><td>CS75: ${contagemModelos["CS75"]}</td><td>C655: ${contagemModelos["C655"]}</td></tr></tbody></table>`;
 
   let resumoGeralDados = { 1: { meta: 0, prod: 0 }, 2: { meta: 0, prod: 0 }, 3: { meta: 0, prod: 0 } };
   FAIXAS.forEach(f => { resumoGeralDados[f.turno].meta += f.meta; });
@@ -768,13 +818,21 @@ function renderIndicador() {
   }
 }
 
+function formatarHorasMinutos(totalMs) {
+  const totalMinutos = Math.floor(totalMs / 60000);
+  const h = Math.floor(totalMinutos / 60).toString().padStart(2, '0');
+  const m = (totalMinutos % 60).toString().padStart(2, '0');
+  return `${h}h ${m}m`;
+}
+
 function renderImpactos() {
   const retornos = veiculos.filter(v => v.retorno);
   document.getElementById("impacto-total-retornos").textContent = retornos.length;
-  
-  let totalMs = 0; paradas.forEach(p => totalMs += p.duracaoMs);
-  const tm = Math.floor(totalMs / 60000).toString().padStart(2, '0'); const ts = Math.floor((totalMs % 60000) / 1000).toString().padStart(2, '0');
-  document.getElementById("impacto-total-tempo").textContent = `${tm}m ${ts}s`;
+
+  const msAlin1 = paradas.filter(p => p.alinhamento === "ALINHAMENTO 1").reduce((acc, p) => acc + p.duracaoMs, 0);
+  const msAlin2 = paradas.filter(p => p.alinhamento === "ALINHAMENTO 2").reduce((acc, p) => acc + p.duracaoMs, 0);
+  document.getElementById("impacto-tempo-alin1").textContent = formatarHorasMinutos(msAlin1);
+  document.getElementById("impacto-tempo-alin2").textContent = formatarHorasMinutos(msAlin2);
 
   const tbodyP = document.getElementById("tabela-paradas-body");
   if(tbodyP) {
