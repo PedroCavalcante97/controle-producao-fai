@@ -151,13 +151,16 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
 .modal h2.massiva-title-modal { color: var(--verde-suave); }
 .modal h2.bloqueio-title-modal { color: var(--amarelo-destaque); }
 .modal p { font-size: 13px; color: var(--texto-sec); letter-spacing: 1px; margin-bottom: 24px; line-height: 1.7; }
-.modal-btns { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
+.modal-btns { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
 .modal-btn { flex: 1; padding: 12px 24px; border-radius: 8px; border: none; font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 1px; transition: opacity .2s; }
 .modal-btn:hover { opacity: 0.9; }
 .modal-btn.confirm { background: var(--vermelho-suave); color: #fff; }
 .modal-btn.confirm-massiva { background: var(--verde-suave); color: #000; }
 .modal-btn.confirm-bloqueio { background: var(--amarelo-destaque); color: #000; }
 .modal-btn.cancel { background: var(--bg-page); border: 1px solid var(--border); color: var(--branco); }
+.modal-btn.link-especial { background: transparent; border: 1px solid var(--azul-ativo); color: var(--azul-ativo); flex: 1 1 100%; }
+.modal-btn.confirm-especial { background: var(--azul-ativo); color: #fff; }
+.separador-modal { border: none; border-top: 1px solid var(--border); margin: 18px 0 4px 0; }
 
 .btn-filter-massiva { padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-panel); color: var(--texto-sec); font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 700; cursor: pointer; margin-bottom: 12px; letter-spacing: 1px; transition: all .2s; }
 .btn-filter-massiva.active { border-color: var(--vermelho-suave); background: rgba(255, 92, 92, 0.1); color: var(--vermelho-suave); }
@@ -213,6 +216,24 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
       <div class="modal-btns">
         <button class="modal-btn cancel" onclick="visualizarHoraAHoraTurno3()">VISUALIZAR HORA A HORA</button>
         <button class="modal-btn confirm" style="background:var(--amarelo-destaque); color:#000;" onclick="abrirModalNovoDiaViaPopup()">INICIAR NOVO DIA</button>
+      </div>
+
+      <hr class="separador-modal">
+
+      <!-- Botão para cancelar o reinício forçado, mantendo todos os dados atuais -->
+      <div class="modal-btns" id="wrap-btn-cancelar-reinicio">
+        <button class="modal-btn link-especial" onclick="toggleCancelarReinicioInput()">CANCELAR REINÍCIO FORÇADO (SENHA ESPECIAL)</button>
+      </div>
+
+      <div id="cancelar-reinicio-wrap" style="display:none; margin-top:14px; text-align:left;">
+        <div class="password-wrapper">
+          <input type="password" class="login-input" id="cancelar-reinicio-senha" placeholder="SENHA ESPECIAL" autocomplete="off" onkeydown="if(event.key==='Enter') confirmarCancelarReinicio()">
+        </div>
+        <div class="login-erro" id="cancelar-reinicio-erro">&#10006; SENHA INCORRETA</div>
+        <div class="modal-btns">
+          <button class="modal-btn cancel" onclick="fecharCancelarReinicioInput()">VOLTAR</button>
+          <button class="modal-btn confirm-especial" onclick="confirmarCancelarReinicio()">CONFIRMAR E MANTER DADOS</button>
+        </div>
       </div>
     </div>
   </div>
@@ -277,7 +298,7 @@ body { background: var(--bg-page); color: var(--branco); font-family: 'DM Mono',
   <div class="header">
     <div class="header-left">
       <div class="header-title">• SISTEMA DE LANÇAMENTO</div>
-      <div class="header-sub">SISTEMA DE LANÇAMENTO - FAI (BETA v2.0)</div>
+      <div class="header-sub">SISTEMA DE LANÇAMENTO - FAI (BETA v2.1)</div>
     </div>
     <div class="header-right">
       <div class="user-status-box">
@@ -458,6 +479,9 @@ let firebaseConectado = false;
 // Adicione novas senhas nesta lista futuramente (ex: "122464", "SUANOVASENHA").
 const SENHAS_NOVO_DIA = ["122464"];
 
+// Senha especial que cancela o alerta/bloqueio de reinício forçado SEM apagar nenhum dado.
+const SENHA_CANCELAR_REINICIO = "caoa9717**";
+
 // Estado do bloqueio de lançamento (sincronizado via Firebase para todos os PCs)
 let aguardandoNovoDiaAtivo = false;
 let modalTurno3JaExibido = false;
@@ -533,6 +557,7 @@ function sincronizarBloqueioNovoDia() {
     atualizarBannerBloqueio();
     if (aguardandoNovoDiaAtivo) {
       if (!modalTurno3JaExibido) {
+        resetarUICancelarReinicio();
         document.getElementById("modal-turno3-overlay").classList.add("show");
         modalTurno3JaExibido = true;
       }
@@ -558,6 +583,43 @@ function dispararAlertaNovoDia() {
 }
 function visualizarHoraAHoraTurno3() { document.getElementById("modal-turno3-overlay").classList.remove("show"); abrirAba("alinhamento"); }
 function abrirModalNovoDiaViaPopup() { document.getElementById("modal-turno3-overlay").classList.remove("show"); abrirModal(); }
+
+// CANCELAR REINÍCIO FORÇADO (mantém todos os dados, apenas libera o bloqueio)
+function resetarUICancelarReinicio() {
+  const wrapInput = document.getElementById("cancelar-reinicio-wrap");
+  const wrapBtn = document.getElementById("wrap-btn-cancelar-reinicio");
+  const erro = document.getElementById("cancelar-reinicio-erro");
+  const senhaInput = document.getElementById("cancelar-reinicio-senha");
+  if (wrapInput) wrapInput.style.display = "none";
+  if (wrapBtn) wrapBtn.style.display = "flex";
+  if (erro) erro.style.display = "none";
+  if (senhaInput) senhaInput.value = "";
+}
+function toggleCancelarReinicioInput() {
+  document.getElementById("cancelar-reinicio-wrap").style.display = "block";
+  document.getElementById("wrap-btn-cancelar-reinicio").style.display = "none";
+  document.getElementById("cancelar-reinicio-erro").style.display = "none";
+  document.getElementById("cancelar-reinicio-senha").value = "";
+  setTimeout(() => document.getElementById("cancelar-reinicio-senha").focus(), 100);
+}
+function fecharCancelarReinicioInput() { resetarUICancelarReinicio(); }
+function confirmarCancelarReinicio() {
+  const senhaInput = document.getElementById("cancelar-reinicio-senha");
+  const erro = document.getElementById("cancelar-reinicio-erro");
+  const senha = senhaInput.value.trim();
+  if (senha !== SENHA_CANCELAR_REINICIO) {
+    erro.style.display = "block";
+    senhaInput.value = "";
+    senhaInput.focus();
+    return;
+  }
+  // Apenas libera o bloqueio de lançamento no Firebase. NENHUM dado (veículos/paradas) é apagado.
+  db.ref("producao/aguardandoNovoDia").set(false).then(() => {
+    document.getElementById("modal-turno3-overlay").classList.remove("show");
+    modalTurno3JaExibido = false;
+    resetarUICancelarReinicio();
+  });
+}
 
 function sincronizarLogReinicios() {
   db.ref("producao/logReinicios").limitToLast(5).on("value", (snapshot) => {
